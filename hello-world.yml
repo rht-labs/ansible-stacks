@@ -2,4 +2,4 @@
 
   tasks:
   - name: hello
-    debug: msg=" hi, {{ foo }} & {{ bar }}! "
+    debug: msg=" hi, {{ stack_configuration }} "
