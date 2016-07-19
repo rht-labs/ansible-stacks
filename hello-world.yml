@@ -2,4 +2,4 @@
 
   tasks:
   - name: hello
-    debug: msg="hi"
+    debug: msg=" hi, {{ foo }} & {{ bar }}! "
