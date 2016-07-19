@@ -1,0 +1,5 @@
+---
+openshift_host_env: env3-1-master.innovation.labs.redhat.com
+openshift:
+  common:
+    client_binary: "oc"
