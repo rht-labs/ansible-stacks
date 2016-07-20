@@ -12,7 +12,7 @@
   command: >
     bash -c "{{ openshift.common.client_binary }} get project {{ openshift_project_name }} | egrep -c {{ openshift_project_name }}"
   register: project_name_taken
-  ignore_errors: True
+  failed_when: "'NEVER FAIL' in project_name_taken.stderr"
 
 - name: "Output message if project {{ openshift_project_name }} exists"
   when: project_name_taken.stdout != "0"
