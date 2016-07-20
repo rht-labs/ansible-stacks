@@ -1,7 +1,0 @@
----
-- name: "Create an OpenShift project"
-  hosts: localhost
-
-  roles:
-  - role: openshift-defaults
-  - role: create-ose-project
