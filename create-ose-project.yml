@@ -3,4 +3,5 @@
   hosts: localhost
 
   roles:
-  - create-ose-project
+  - role: openshift-defaults
+  - role: create-ose-project

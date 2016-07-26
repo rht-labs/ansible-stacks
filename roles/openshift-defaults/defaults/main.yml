@@ -1,0 +1,9 @@
+---
+jenkins_host_env: demo-jenkins.innovation.redhat.com:8080
+openshift_host_env: env3-1-master.innovation.labs.redhat.com
+openshift_user: "joe"
+openshift_password: ""
+openshift_project_name: ""
+openshift:
+  common:
+    client_binary: "oc"
