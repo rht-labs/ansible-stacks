@@ -1,6 +1,5 @@
 ---
 - name: "Launch Hexboard demo in project {{ openshift_project_name }}"
-  when: project_name_taken.stdout == "1"
   uri:
    url: http://{{ jenkins_host_env }}/job/01-HexboardBuildAndDeploy/buildWithParameters?PROJECT_NAME={{ openshift_project_name }}
    method: POST
