@@ -1,0 +1,82 @@
+{
+  "openshift_resources_to_create": {
+    "projects": [
+      {
+        "name": "infographic-holmes",
+        "display_name": "Infographic - Holmes",
+        "apps": [
+          {
+            "name": "infographic",
+            "git_url": "https://github.com/sherl0cks/infographic.git",
+            "context_dir": "website",
+            "base_image": "openshift/php"
+          },
+          {
+            "name": "infographic-node-app",
+            "git_url": "https://github.com/sherl0cks/infographic-node-app.git",
+            "base_image": "openshift/nodejs"
+          }
+        ]
+      },
+      {
+        "name": "infographic-mcanoy",
+        "display_name": "Infographic - McAnoy",
+        "apps": [
+          {
+            "name": "infographic-node-app",
+            "git_url": "https://github.com/mcanoy/infographic-node-app.git",
+            "base_image": "openshift/nodejs"
+          }
+        ]
+      },
+      {
+        "name": "infographic-dev",
+        "display_name": "Infographic - Dev",
+        "build_environment": true,
+        "apps": [
+          {
+            "name": "infographic",
+            "git_url": "https://github.com/rht-labs/infographic.git",
+            "context_dir": "website",
+            "base_image": "openshift/php"
+          },
+          {
+            "name": "infographic-node-app",
+            "git_url": "https://github.com/rht-labs/infographic-node-app.git",
+            "base_image": "openshift/nodejs"
+          }
+        ]
+      },
+      {
+        "name": "infographic-stage",
+        "display_name": "Infographic - Stage",
+        "promotion_environment": true,
+        "apps": [
+          {
+            "name": "infographic",
+            "base_image": "infographic"
+          },
+          {
+            "base_image": "infographic-node-app",
+            "name": "infographic-node-app"
+          }
+        ]
+      },
+      {
+        "name": "infographic-prod",
+        "display_name": "Infographic - Prod",
+        "promotion_environment": true,
+        "apps": [
+          {
+            "name": "infographic",
+            "base_image": "infographic"
+          },
+          {
+            "base_image": "infographic-node-app",
+            "name": "infographic-node-app"
+          }
+        ]
+      }
+    ]
+  }
+}

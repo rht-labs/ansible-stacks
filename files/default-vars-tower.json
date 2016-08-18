@@ -1,0 +1,99 @@
+{
+  "docker": {
+    "common": {
+      "client_binary": "docker"
+    },
+    "registry": {
+      "host": "registry.apps.env2-1.innovation.labs.redhat.com"
+    },
+    "user": {
+      "email": "Rhc-open-innovation-labs@redhat.com"
+    }
+  },
+  "openshift": {
+    "common": {
+      "client_binary": "oc"
+    }
+  },
+  "openshift_host_env": "master1.env2-1.innovation.labs.redhat.com",
+  "openshift_resources_to_create": {
+    "projects": [
+      {
+        "apps": [
+          {
+            "base_image": "openshift/php",
+            "context_dir": "website",
+            "git_url": "https://github.com/sherl0cks/infographic.git",
+            "name": "infographic"
+          },
+          {
+            "base_image": "openshift/nodejs",
+            "git_url": "https://github.com/sherl0cks/infographic-node-app.git",
+            "name": "infographic-node-app"
+          }
+        ],
+        "display_name": "Infographic - Holmes",
+        "name": "infographic-holmes"
+      },
+      {
+        "apps": [
+          {
+            "base_image": "openshift/nodejs",
+            "git_url": "https://github.com/mcanoy/infographic-node-app.git",
+            "name": "infographic-node-app"
+          }
+        ],
+        "display_name": "Infographic - McAnoy",
+        "name": "infographic-mcanoy"
+      },
+      {
+        "apps": [
+          {
+            "base_image": "openshift/php",
+            "context_dir": "website",
+            "git_url": "https://github.com/rht-labs/infographic.git",
+            "name": "infographic"
+          },
+          {
+            "base_image": "openshift/nodejs",
+            "git_url": "https://github.com/rht-labs/infographic-node-app.git",
+            "name": "infographic-node-app"
+          }
+        ],
+        "build_environment": true,
+        "display_name": "Infographic - Dev",
+        "name": "infographic-dev"
+      },
+      {
+        "apps": [
+          {
+            "base_image": "infographic",
+            "name": "infographic"
+          },
+          {
+            "base_image": "infographic-node-app",
+            "name": "infographic-node-app"
+          }
+        ],
+        "display_name": "Infographic - Stage",
+        "name": "infographic-stage",
+        "promotion_environment": true
+      },
+      {
+        "apps": [
+          {
+            "base_image": "infographic",
+            "name": "infographic"
+          },
+          {
+            "base_image": "infographic-node-app",
+            "name": "infographic-node-app"
+          }
+        ],
+        "display_name": "Infographic - Prod",
+        "name": "infographic-prod",
+        "promotion_environment": true
+      }
+    ]
+  }
+}

@@ -1,0 +1,16 @@
+---
+# To run this test, you need to pass in the openshift password
+# e.g. ansible-playbook local-create-ose-project.yml -i inventory -e "openshift_password=your_password"
+
+- name: "Create Infographic Resources"
+  hosts: localhost
+  
+  vars_files:
+    - infographic_resources.json
+  
+# roles under test      
+  roles:
+    - openshift-defaults
+    - create-openshift-resources
+
+# no clean up, this is what will go in tower

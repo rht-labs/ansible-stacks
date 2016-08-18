@@ -1,0 +1,35 @@
+---
+#### Defensive Programming
+# https://github.com/openshift/openshift-ansible/blob/master/docs/best_practices_guide.adoc
+
+- name: Fail for Missing User Name
+  fail: msg="This role requires openshift_user to be set and non empty"
+  when: openshift_user is not defined or openshift_user == ''
+
+- name: Fail for Missing Password
+  fail: msg="This role requires openshift_password to be set and non empty"
+  when: openshift_password is not defined or openshift_password == ''
+
+- name: Fail for Missing OpenShift Host Env
+  fail: msg="This role requires openshift_host_env to be set and non empty"
+  when: openshift_host_env is not defined or openshift_host_env == ""
+
+- name: Fail for Missing OpenShift Resources
+  fail: msg="This role requires openshift_resources_to_create to be set and non empty"
+  when: openshift_resources_to_create is not defined or openshift_resources_to_create == ""
+
+- name: Fail for Missing OpenShift Projects
+  fail: msg="This role requires openshift_resources_to_create.projects to be set and non empty"
+  when: openshift_resources_to_create.projects is not defined or openshift_resources_to_create.projects == ""
+
+
+- name: "Log in to OpenShift Client"
+  command: >
+    {{ openshift.common.client_binary }} login {{ openshift_host_env }} 
+    --insecure-skip-tls-verify=true --username={{ openshift_user }} --password={{ openshift_password }}
+  changed_when: False
+
+- include: create_project.yml project={{ project_item }}
+  with_items: '{{ openshift_resources_to_create.projects }}'
+  loop_control:
+    loop_var: project_item 
