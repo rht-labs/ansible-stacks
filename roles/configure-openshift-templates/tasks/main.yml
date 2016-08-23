@@ -28,11 +28,11 @@
     {{ openshift.common.client_binary }} delete imagestreams --all -n {{ openshift_project_name }}
   when: openshift_project_name|trim != ''
 
-- name: "Load Up Templates in {{ openshift_project_name }}"
+- name: "Load Up Templates in {{ openshift_target_project_name }}"
   command: >
     {{ openshift.common.client_binary }} create -f {{ template_file }} -n {{ openshift_target_project_name }}
 
-- name: "Load Up ImageStreams in {{ openshift_project_name }}"
+- name: "Load Up ImageStreams in {{ openshift_target_project_name }}"
   command: >
     {{ openshift.common.client_binary }} create -f {{ imagestreams_file }} -n {{ openshift_target_project_name }}
 
