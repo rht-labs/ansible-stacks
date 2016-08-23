@@ -1,0 +1,10 @@
+---
+
+- name: Load up example templates and image streams
+  hosts: localhost
+  vars:
+  - template_file: example-php-template.json
+  - imagestreams_file: example-image-stream-php.json
+  roles:
+  - openshift-defaults
+  - configure-openshift-templates
