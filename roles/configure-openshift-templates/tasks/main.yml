@@ -1,0 +1,39 @@
+---
+- name: "Setting OpenShift Templates and ImageStreams Facts"
+  set_fact:
+    openshift_target_project_name: "{{ (openshift_project_name|trim == '') | ternary(default_openshift_project_name, openshift_project_name) }}"
+
+- name: Get all project names
+  command: >
+    {{ openshift.common.client_binary }} get projects
+  register: existing_openshift_projects
+
+- name: "Clean out old Templates in all namespaces/projects"
+  command: >
+    {{ openshift.common.client_binary }} delete templates --all -n {{ item.split(' ')[0] }}
+  with_items: "{{ existing_openshift_projects.stdout_lines }}"
+  
+- name: "Clean out old Templates in '{{ openshift_project_name }}' namespace"
+  command: >
+    {{ openshift.common.client_binary }} delete templates --all -n {{ openshift_project_name }}
+  when: openshift_project_name|trim != ''
+
+- name: "Clean out old ImageStreams in all namespaces/projects"
+  command: >
+    {{ openshift.common.client_binary }} delete imagestreams --all -n {{ item.split(' ')[0]}}
+  with_items: "{{ existing_openshift_projects.stdout_lines }}"
+  
+- name: "Clean out old ImageStreams in '{{ openshift_project_name }}' namespace"
+  command: >
+    {{ openshift.common.client_binary }} delete imagestreams --all -n {{ openshift_project_name }}
+  when: openshift_project_name|trim != ''
+
+- name: "Load Up Templates in {{ openshift_target_project_name }}"
+  command: >
+    {{ openshift.common.client_binary }} create -f {{ template_file }} -n {{ openshift_target_project_name }}
+
+- name: "Load Up ImageStreams in {{ openshift_target_project_name }}"
+  command: >
+    {{ openshift.common.client_binary }} create -f {{ imagestreams_file }} -n {{ openshift_target_project_name }}
+
+
