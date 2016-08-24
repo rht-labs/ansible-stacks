@@ -4,4 +4,4 @@
 
   roles:
   - role: openshift-defaults
-  - role: create-openshift-resources
+  - role: create-ose-project
