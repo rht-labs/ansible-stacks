@@ -24,12 +24,12 @@
             "base_image": "openshift/php",
             "context_dir": "website",
             "git_url": "https://github.com/sherl0cks/infographic.git",
-            "name": "infographic"
+            "name": "web"
           },
           {
             "base_image": "openshift/nodejs",
             "git_url": "https://github.com/sherl0cks/infographic-node-app.git",
-            "name": "infographic-node-app"
+            "name": "node-app"
           }
         ],
         "display_name": "Infographic - Holmes",
@@ -40,7 +40,7 @@
           {
             "base_image": "openshift/nodejs",
             "git_url": "https://github.com/mcanoy/infographic-node-app.git",
-            "name": "infographic-node-app"
+            "name": "node-app"
           }
         ],
         "display_name": "Infographic - McAnoy",
@@ -52,12 +52,12 @@
             "base_image": "openshift/php",
             "context_dir": "website",
             "git_url": "https://github.com/rht-labs/infographic.git",
-            "name": "infographic"
+            "name": "web"
           },
           {
             "base_image": "openshift/nodejs",
             "git_url": "https://github.com/rht-labs/infographic-node-app.git",
-            "name": "infographic-node-app"
+            "name": "node-app"
           }
         ],
         "build_environment": true,
@@ -67,12 +67,12 @@
       {
         "apps": [
           {
-            "base_image": "infographic",
-            "name": "infographic"
+            "base_image": "web",
+            "name": "web"
           },
           {
-            "base_image": "infographic-node-app",
-            "name": "infographic-node-app"
+            "base_image": "node-app",
+            "name": "node-app"
           }
         ],
         "display_name": "Infographic - Stage",
@@ -82,12 +82,12 @@
       {
         "apps": [
           {
-            "base_image": "infographic",
-            "name": "infographic"
+            "base_image": "web",
+            "name": "web"
           },
           {
-            "base_image": "infographic-node-app",
-            "name": "infographic-node-app"
+            "base_image": "node-app",
+            "name": "node-app"
           }
         ],
         "display_name": "Infographic - Prod",

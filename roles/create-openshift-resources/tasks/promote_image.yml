@@ -1,7 +1,7 @@
 ---
 # TODO: we could push the docker login up to main so that it is done few times. 
 # the problem is that requires every run to have a docker registry defined.
-# some users may only want to create "build" environemtn and not "promotion" environments,
+# some users may only want to create "build" environment and not "promotion" environments,
 # so this may get in the way if we login into the registry when its not needed
 - name: Get User Token
   command: >
@@ -14,7 +14,7 @@
 
 - name: Set Docker Image Names
   set_fact:
-    build_image_name: "{{ docker.registry.host }}/{{ build_project_name }}/{{ app_name}}"
+    build_image_name: "{{ docker.registry.host }}/{{ build_project_name }}/{{ app_name}}" 
     promotion_image_name: "{{ docker.registry.host }}/{{ project_name }}/{{ app_name }}"
 
 - name: Pull Build Environment Image
@@ -24,6 +24,7 @@
 # Docker push doesn't work right until ansible 2.2, so we need to do the below in commands
 # This is docker 1.10 syntax. We don't support docker 1.9 right now
 # crappy syntax here between go templates and jenga templates
+
 - name: Retrieve Build Image ID
   command: >
     {{ docker.common.client_binary }} images --format '{{ '{{' }} .ID {{ '}}' }}' {{ build_image_name }}:latest
