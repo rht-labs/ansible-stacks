@@ -1,0 +1,7 @@
+---
+- name: "Create OpenShift Resources"
+  hosts: localhost
+
+  roles:
+  - openshift-defaults
+  - create-openshift-resources

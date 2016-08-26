@@ -1,0 +1,30 @@
+{
+  "openshift_resources_to_create": {
+    "projects": [
+      {
+        "name": "ci-dev",
+        "display_name": "Temp Dev CI Support",
+        "build_environment": true,
+        "apps": [
+          {
+            "name": "infographic",
+            "git_url": "https://github.com/rht-labs/infographic.git",
+            "context_dir": "website",
+            "base_image": "openshift/php"
+          }
+        ]
+      },
+      {
+        "name": "ci-stage",
+        "display_name": "Temp Stage CI Support",
+        "promotion_environment": true,
+        "apps": [
+          {
+            "name": "infographic",
+            "base_image": "infographic"
+          }
+        ]
+      }
+    ]
+  }
+}

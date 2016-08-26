@@ -1,0 +1,36 @@
+---
+- name: Fail for Missing Project Name
+  fail: msg="This role requires project.name to be set and non empty"
+  when: project.name is not defined or project.name == ''
+
+- name: "Set Basic Project Facts"
+  set_fact:
+    project_options: ''
+
+- name: "Create Imagestream Fact For Build Environment"    
+  set_fact:  
+    imagestream_names: []
+    build_project_name: "{{ project.name }}"
+  when: project.build_environment is defined and project.build_environment == true  
+
+- name: "Add display-name Option"
+  set_fact: 
+    project_options: "{{ project_options }} --display-name='{{ project.display_name }}'"
+  when: project.display_name is defined and project.display_name != ''  
+
+- name: "Determine If {{ project.name }} Project Exists"
+  command: >
+     {{ openshift.common.client_binary }} get project {{ project.name }} -o json
+  register: project_name_taken
+  failed_when: false
+  changed_when: false
+
+- name: "Create Project {{ project.name }}"
+  when: project_name_taken.rc == 1
+  command: >
+    {{ openshift.common.client_binary }} new-project {{ project.name }} {{ project_options }}
+
+- include: create_app.yml app={{ app_item }}
+  with_items: '{{ project.apps }}' 
+  loop_control:
+    loop_var: app_item 

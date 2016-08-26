@@ -1,0 +1,96 @@
+---
+- name: Fail for Missing git url and base image
+  fail: msg="This role requires app.git_url or app.base_image to be set and non empty"
+  when: app.git_url is not defined and app.base_image is not defined
+
+- name: Fail for Missing app name
+  fail: msg="This role requires app.name to be set and non empty"
+  when: app.name is not defined and app.name == ''
+
+- name: Fail for Missing project name
+  fail: msg="This role requires project.name to be set and non empty"
+  when: project.name is not defined and project.name == ''  
+
+- name: "Set App Basic Facts"
+  set_fact:
+    app_options: ''
+    app_source: ''
+
+- name: "Set App Source with Git Url and Base Image" 
+  set_fact:
+    app_source: "{{ app.base_image }}~{{ app.git_url }}"
+  when: app.git_url is defined and app.git_url != '' and app.base_image is defined and app.base_image != ''
+
+- name: "Set App Source with only Base Image"
+  set_fact:
+    app_options: "{{ app_options }} --image-stream={{ app.base_image }}"
+  when: (app.base_image is defined and app.base_image != '') and (app.git_url is not defined or app.git_url == '')
+
+- name: "Set App Source with only Git Url"
+  set_fact:
+    app_source: "{{ app.git_url }}"
+  when: (app.git_url is defined and app.git_url != '') and (app.base_image is not defined or app.base_image == '')   
+
+- name: "Add context-dir Option"
+  set_fact: 
+    app_options: "{{ app_options }} --context-dir={{ app.context_dir }}"
+  when: app.context_dir is defined and app.context_dir != ''  
+
+- name: "Add name Option"
+  set_fact: 
+    app_options: "{{ app_options }} --name={{ app.name }}"
+  when: app.name is defined and app.name != ''  
+
+- name: "Determine if {{ app.name }} App Exists"
+  command: >
+     {{ openshift.common.client_binary }} get dc {{ app.name }} -n {{ project.name }} -o json
+  register: get_app_name_result
+  failed_when: false
+  changed_when: false
+
+# This covers the corner case where we are making an app from an imagestream in the same workspace 
+# Was useful in testing, not sure if really needed
+- name: "Determine if {{ app.base_image }} Imagestream Exists"
+  command: >
+     {{ openshift.common.client_binary }} get istag {{ app.base_image }}:latest -n {{ project.name }} -o json
+  register: get_imagestream_result
+  when: ( not ('/' in app.base_image) ) and build_project_name == project.name
+  failed_when: false
+  changed_when: false
+  until: get_imagestream_result.rc == 0
+  retries: 12
+  delay: 5
+  ignore_errors: yes
+
+## This is confusing to me. Dunno why the app_item is not passed to the includes context...
+- name: Set Facts Not Sure Why
+  set_fact:
+    app_name: "{{ app.name }}"
+    project_name: "{{ project.name }}"
+  when: get_app_name_result.rc == 1 and project.promotion_environment is defined and project.promotion_environment == true  
+
+- include: promote_image.yml 
+  when: get_app_name_result.rc == 1 and project.promotion_environment is defined and project.promotion_environment == true
+
+- name: "Create App: {{ app.name }}"
+  command: >
+    {{ openshift.common.client_binary }} new-app {{ app_source }} -n {{ project.name }} {{ app_options }} 
+  when: get_app_name_result.rc == 1
+  register: create_app_result
+
+- name: "Expose App: {{ app.name }}"
+  command: >
+    {{ openshift.common.client_binary }} expose service {{ app.name }} -n {{ project.name }} 
+  when: get_app_name_result.rc == 1 and create_app_result.rc == 0   
+
+  # TODO Add a check here to make sure build passed
+
+- name: "Wait For Image To Be Published if Build Environment"
+  command: >
+     {{ openshift.common.client_binary }} get istag {{ app.name }}:latest -n {{ project.name }} -o json
+  register: get_build_imagestream_result
+  when: build_project_name == project.name and app.git_url is defined and app.git_url != ''
+  changed_when: false
+  until: get_build_imagestream_result.rc == 0
+  retries: 60
+  delay: 5 # this is 5 min

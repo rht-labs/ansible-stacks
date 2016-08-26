@@ -6,4 +6,12 @@ openshift_password: ""
 openshift_project_name: ""
 openshift:
   common:
-    client_binary: "oc"
+    client_binary: "oc"  
+docker:
+  common:
+    client_binary: "docker"
+  registry:
+    host: registry.env3-1.innovation.labs.redhat.com
+  user:
+    email: Rhc-open-innovation-labs@redhat.com  
+

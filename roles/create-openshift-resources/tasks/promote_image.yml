@@ -1,0 +1,39 @@
+---
+# TODO: we could push the docker login up to main so that it is done few times. 
+# the problem is that requires every run to have a docker registry defined.
+# some users may only want to create "build" environment and not "promotion" environments,
+# so this may get in the way if we login into the registry when its not needed
+- name: Get User Token
+  command: >
+    {{ openshift.common.client_binary }} whoami -t 
+  register: user_token_results
+
+- name: Login To OpenShift Docker Registry
+  command: >
+    {{ docker.common.client_binary }} login -u={{ openshift_user }} -e={{ docker.user.email }} -p={{ user_token_results.stdout }} {{ docker.registry.host }}
+
+- name: Set Docker Image Names
+  set_fact:
+    build_image_name: "{{ docker.registry.host }}/{{ build_project_name }}/{{ app_name}}" 
+    promotion_image_name: "{{ docker.registry.host }}/{{ project_name }}/{{ app_name }}"
+
+- name: Pull Build Environment Image
+  docker_image:
+    name: "{{ build_image_name }}"
+
+# Docker push doesn't work right until ansible 2.2, so we need to do the below in commands
+# This is docker 1.10 syntax. We don't support docker 1.9 right now
+# crappy syntax here between go templates and jenga templates
+
+- name: Retrieve Build Image ID
+  command: >
+    {{ docker.common.client_binary }} images --format '{{ '{{' }} .ID {{ '}}' }}' {{ build_image_name }}:latest
+  register: docker_tag_image_result
+
+- name: Tag Build Image With Promotion Image
+  command: >
+    {{ docker.common.client_binary }} tag {{ docker_tag_image_result.stdout }} {{ promotion_image_name }}:latest
+
+- name: Push Image to Promotion Environment
+  command: >
+    {{ docker.common.client_binary }} push {{ promotion_image_name }}
