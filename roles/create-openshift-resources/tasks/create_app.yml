@@ -9,14 +9,14 @@
 
 - name: Fail for Missing project name
   fail: msg="This role requires project.name to be set and non empty"
-  when: project.name is not defined and project.name == ''  
+  when: project.name is not defined and project.name == ''
 
 - name: "Set App Basic Facts"
   set_fact:
     app_options: ''
     app_source: ''
 
-- name: "Set App Source with Git Url and Base Image" 
+- name: "Set App Source with Git Url and Base Image"
   set_fact:
     app_source: "{{ app.base_image }}~{{ app.git_url }}"
   when: app.git_url is defined and app.git_url != '' and app.base_image is defined and app.base_image != ''
@@ -29,17 +29,43 @@
 - name: "Set App Source with only Git Url"
   set_fact:
     app_source: "{{ app.git_url }}"
-  when: (app.git_url is defined and app.git_url != '') and (app.base_image is not defined or app.base_image == '')   
+  when: (app.git_url is defined and app.git_url != '') and (app.base_image is not defined or app.base_image == '')
 
 - name: "Add context-dir Option"
-  set_fact: 
+  set_fact:
     app_options: "{{ app_options }} --context-dir={{ app.context_dir }}"
-  when: app.context_dir is defined and app.context_dir != ''  
+  when: app.context_dir is defined and app.context_dir != ''
 
 - name: "Add name Option"
-  set_fact: 
+  set_fact:
     app_options: "{{ app_options }} --name={{ app.name }}"
-  when: app.name is defined and app.name != ''  
+  when: app.name is defined and app.name != ''
+
+- name: "Set Labels Fact (Not Sure Why I Need To)"
+  set_fact:
+    labels: "{{ app.labels }}"
+  when: app.labels is defined and app.labels != '' and app.labels|length > 0
+
+- include: create_labels_string.yml
+  when: labels is defined and labels != ''
+
+- name: "Add labels_string to app_options"
+  set_fact:
+    app_options: "{{ app_options }} {{ labels_string }}"
+  when: labels_string is defined and labels_string != ''
+
+- name: "Set Environment_Variables Fact (Not Sure Why I Need To)"
+  set_fact:
+    environment_variables: "{{ app.environment_variables }}"
+  when: app.environment_variables is defined and app.environment_variables != '' and app.environment_variables|length > 0
+
+- include: create_environment_variables_string.yml
+  when: environment_variables is defined and environment_variables != ''
+
+- name: "Add environment_variables_string to app_options"
+  set_fact:
+    app_options: "{{ app_options }} {{ environment_variables_string }}"
+  when: environment_variables_string is defined and environment_variables_string != ''
 
 - name: "Determine if {{ app.name }} App Exists"
   command: >
@@ -48,7 +74,7 @@
   failed_when: false
   changed_when: false
 
-# This covers the corner case where we are making an app from an imagestream in the same workspace 
+# This covers the corner case where we are making an app from an imagestream in the same workspace
 # Was useful in testing, not sure if really needed
 - name: "Determine if {{ app.base_image }} Imagestream Exists"
   command: >
@@ -67,21 +93,21 @@
   set_fact:
     app_name: "{{ app.name }}"
     project_name: "{{ project.name }}"
-  when: get_app_name_result.rc == 1 and project.promotion_environment is defined and project.promotion_environment == true  
+  when: get_app_name_result.rc == 1 and project.promotion_environment is defined and project.promotion_environment == true
 
-- include: promote_image.yml 
+- include: promote_image.yml
   when: get_app_name_result.rc == 1 and project.promotion_environment is defined and project.promotion_environment == true
 
 - name: "Create App: {{ app.name }}"
   command: >
-    {{ openshift.common.client_binary }} new-app {{ app_source }} -n {{ project.name }} {{ app_options }} 
+    {{ openshift.common.client_binary }} new-app {{ app_source }} -n {{ project.name }} {{ app_options }}
   when: get_app_name_result.rc == 1
   register: create_app_result
 
 - name: "Expose App: {{ app.name }}"
   command: >
-    {{ openshift.common.client_binary }} expose service {{ app.name }} -n {{ project.name }} 
-  when: get_app_name_result.rc == 1 and create_app_result.rc == 0   
+    {{ openshift.common.client_binary }} expose service {{ app.name }} -n {{ project.name }}
+  when: get_app_name_result.rc == 1 and create_app_result.rc == 0
 
   # TODO Add a check here to make sure build passed
 

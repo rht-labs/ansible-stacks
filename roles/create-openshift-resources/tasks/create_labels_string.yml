@@ -1,0 +1,13 @@
+---
+- name: "Set Base labels_string"
+  set_fact:
+    labels_string: '--labels '
+
+- name: "Add label to labels_string"
+  set_fact:
+    labels_string: "{{ labels_string }}{{ item }}={{ labels[item] }},"
+  with_items: '{{ labels.keys() }}'
+
+- name: "Remove Trailing Comma from labels_string"
+  set_fact:
+    labels_string: "{{ labels_string[:-1] }}"

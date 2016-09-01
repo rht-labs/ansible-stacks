@@ -5,22 +5,19 @@
 - name: "Create test resources"
   hosts: localhost
 
-  vars:
-    app_name: infographic
-    project_name: ci-stage  
-    build_project_name: ci
-
-
   vars_files:
-    - openshift_resources_simple.json
+    - vars/openshift_resources_simple.json
+    - vars/ocp_3.2_env.yml
 
+# roles under test
   roles:
     - openshift-defaults
+    - create-openshift-resources
 
-  post_tasks:
-    - name: "Log in to OpenShift Client"
-      command: >
-        {{ openshift.common.client_binary }} login {{ openshift_host_env }} 
-        --insecure-skip-tls-verify=true --username={{ openshift_user }} --password={{ openshift_password }}
-      changed_when: False
-    - include: ../tasks/promote_image.yml
+# cleanup
+  # post_tasks:
+  # - name: "Remove project {{ item.name }}"
+  #   command: >
+  #     {{ openshift.common.client_binary }} delete project {{ item.name  }}
+  #   when: '"{{ item.name }}" != "ci"'
+  #   with_items: '{{ openshift_resources_to_create.projects }}'
