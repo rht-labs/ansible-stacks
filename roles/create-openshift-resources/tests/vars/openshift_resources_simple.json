@@ -10,7 +10,15 @@
             "name": "infographic",
             "git_url": "https://github.com/rht-labs/infographic.git",
             "context_dir": "website",
-            "base_image": "openshift/php"
+            "base_image": "openshift/php",
+            "labels": {
+              "foo": "bar",
+              "baz": "bat"
+            },
+            "environment_variables": {
+              "a": "b",
+              "c": "d"
+            }
           }
         ]
       },
@@ -21,7 +29,15 @@
         "apps": [
           {
             "name": "infographic",
-            "base_image": "infographic"
+            "base_image": "infographic",
+            "labels": {
+              "label1": "bar",
+              "label2": "bat"
+            },
+            "environment_variables": {
+              "var1": "b",
+              "var2": "d"
+            }
           }
         ]
       }
