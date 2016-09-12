@@ -1,0 +1,9 @@
+---
+- name: Set Default role_binding Facts
+  set_fact:
+    role_binding: "{{ role_binding_item }}"
+
+- name: "Create Role Binding"
+  command: >
+     {{ openshift.common.admin_binary }} policy add-role-to-user {{ item.name }} {{ role_binding.user.user_name }} -n {{ project.name }}
+  with_items: '{{ role_binding.roles }}'

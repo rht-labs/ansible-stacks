@@ -8,6 +8,9 @@
     - vars/openshift_resources_simple.json
     - vars/cdk_2.0_env.yml
 
+  pre_tasks:
+
+
 # roles under test
   roles:
     - create-openshift-resources
@@ -17,5 +20,5 @@
   - name: "Remove project {{ item.name }}"
     command: >
       {{ openshift.common.client_binary }} delete project {{ item.name  }}
-    when: '"{{ item.name }}" != "ci"'
+    when: '"{{ item.name }}" != "ci" and cleanup'
     with_items: '{{ openshift_resources.projects }}'

@@ -7,15 +7,16 @@
     projects_present: false
     openshift_resources: "{{ openshift_cluster.openshift_resources }}" # http://docs.ansible.com/ansible/playbooks_loops.html#loops-and-includes-in-2-0
 
-- name: "Set Variable Resources Facts"
+- name: "Set Variable projects_present Fact"
   set_fact:
     projects_present: true
   when: openshift_resources.projects is defined and openshift_resources.projects != "" and openshift_resources.projects|length > 0
 
-- include: create_project.yml project={{ project_item }}
+- include: create_project.yml
   with_items: '{{ openshift_resources.projects }}'
   loop_control:
     loop_var: project_item
+  static: no
   when: projects_present == true
 
 - name: "Alert User No OpenShift Projects Were Declared"

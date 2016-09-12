@@ -5,6 +5,7 @@ openshift_password: "admin"
 openshift:
   common:
     client_binary: "oc"
+    admin_binary: "oadm"
 docker:
   common:
     client_binary: "docker"

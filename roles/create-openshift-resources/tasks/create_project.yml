@@ -2,19 +2,32 @@
 #### Defensive Programming
 # https://github.com/openshift/openshift-ansible/blob/master/docs/best_practices_guide.adoc
 
-- name: Fail for Missing Project Name
-  fail: msg="This role requires project.name to be set and non empty"
-  when: project.name is not defined or project.name == ''
-
 - name: "Set Basic Project Facts"
   set_fact:
     project_options: ''
+    role_bindings_present: false
+    apps_present: false
+    project: "{{ project_item }}"
+
+- name: Fail for Missing Project Name
+  fail: msg="This role requires project.name to be set and non empty"
+  when: project.name is not defined or project.name == ''
 
 - name: "Set Imagestream Fact For Build Environment"
   set_fact:
     imagestream_names: []
     build_project_name: "{{ project.name }}"
   when: project.build_environment is defined and project.build_environment == true
+
+- name: "Set Variable role_bindings_present Fact"
+  set_fact:
+    role_bindings_present: true
+  when: project.user_to_role is defined and project.user_to_role != "" and project.user_to_role|length > 0
+
+- name: "Set Variable apps_present Fact"
+  set_fact:
+    apps_present: true
+  when: project.apps is defined and project.apps != "" and project.apps|length > 0
 
 - name: "Add display-name Option"
   set_fact:
@@ -33,7 +46,16 @@
   command: >
     {{ openshift.common.client_binary }} new-project {{ project.name }} {{ project_options }}
 
-- include: create_app.yml app={{ app_item }}
+- include: create_role_binding.yml
+  with_items: '{{ project.user_to_role }}'
+  loop_control:
+    loop_var: role_binding_item
+  when: role_bindings_present == true
+  static: no
+
+- include: create_app.yml
   with_items: '{{ project.apps }}'
   loop_control:
     loop_var: app_item
+  when: apps_present == true
+  static: no

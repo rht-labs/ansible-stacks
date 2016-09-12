@@ -13,7 +13,12 @@
                 "name": "infographic",
                 "scm_url": "https://github.com/rht-labs/infographic.git",
                 "context_dir": "website",
-                "base_image": "openshift/php"
+                "base_image": "openshift/php",
+                "labels" :
+                {
+                  "test" : "label",
+                  "foo" : "bar"
+                }
               },
               {
                 "name": "infographic-node-app",
@@ -28,11 +33,24 @@
             "user_to_role": [
               {
                 "user": {
-                  "user_name": "test"
+                  "user_name": "admin"
+                },
+                "roles": [
+                  {
+                    "name": "basic-user"
+                  }
+                ]
+              },
+              {
+                "user": {
+                  "user_name": "openshift-dev"
                 },
                 "roles": [
                   {
                     "name": "admin"
+                  },
+                  {
+                    "name": "basic-user"
                   }
                 ]
               }

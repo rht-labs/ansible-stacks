@@ -1,4 +1,9 @@
 ---
+
+- name: Set Default app Facts
+  set_fact:
+    app: "{{ app_item }}"
+
 - name: Fail for Missing scm_url and base image
   fail: msg="This role requires app.scm_url or app.base_image to be set and non empty"
   when: app.scm_url is not defined and app.base_image is not defined
