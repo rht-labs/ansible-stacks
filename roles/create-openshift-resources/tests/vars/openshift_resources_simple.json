@@ -1,46 +1,45 @@
 {
-  "openshift_resources_to_create": {
-    "projects": [
-      {
-        "name": "ci-dev",
-        "display_name": "Temp Dev CI Support",
-        "build_environment": true,
-        "apps": [
+  "openshift_clusters": [
+    {
+      "id": 1,
+      "openshift_resources": {
+        "projects": [
           {
-            "name": "infographic",
-            "scm_url": "https://github.com/rht-labs/infographic.git",
-            "context_dir": "website",
-            "base_image": "openshift/php",
-            "labels": {
-              "foo": "bar",
-              "baz": "bat"
-            },
-            "environment_variables": {
-              "a": "b",
-              "c": "d"
-            }
-          }
-        ]
-      },
-      {
-        "name": "ci-stage",
-        "display_name": "Temp Stage CI Support",
-        "promotion_environment": true,
-        "apps": [
-          {
-            "name": "infographic",
-            "base_image": "infographic",
-            "labels": {
-              "label1": "bar",
-              "label2": "bat"
-            },
-            "environment_variables": {
-              "var1": "b",
-              "var2": "d"
-            }
+            "name": "ci-dev",
+            "display_name": "Temp Dev CI Support",
+            "build_environment": true,
+            "apps": [
+              {
+                "name": "infographic",
+                "scm_url": "https://github.com/rht-labs/infographic.git",
+                "context_dir": "website",
+                "base_image": "openshift/php"
+              },
+              {
+                "name": "infographic-node-app",
+                "scm_url": "https://github.com/rht-labs/infographic-node-app.git",
+                "base_image": "openshift/nodejs"
+              },
+              {
+                "base_image": "infographic",
+                "name": "test"
+              }
+            ],
+            "user_to_role": [
+              {
+                "user": {
+                  "user_name": "test"
+                },
+                "roles": [
+                  {
+                    "name": "admin"
+                  }
+                ]
+              }
+            ]
           }
         ]
       }
-    ]
-  }
+    }
+  ]
 }

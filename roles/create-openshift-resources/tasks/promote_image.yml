@@ -1,11 +1,12 @@
 ---
-# TODO: we could push the docker login up to main so that it is done few times. 
+# TODO: we could push the docker login up to main so that it is done few times.
 # the problem is that requires every run to have a docker registry defined.
 # some users may only want to create "build" environment and not "promotion" environments,
 # so this may get in the way if we login into the registry when its not needed
+
 - name: Get User Token
   command: >
-    {{ openshift.common.client_binary }} whoami -t 
+    {{ openshift.common.client_binary }} whoami -t
   register: user_token_results
 
 - name: Login To OpenShift Docker Registry
@@ -14,7 +15,7 @@
 
 - name: Set Docker Image Names
   set_fact:
-    build_image_name: "{{ docker.registry.host }}/{{ build_project_name }}/{{ app_name}}" 
+    build_image_name: "{{ docker.registry.host }}/{{ build_project_name }}/{{ app_name}}"
     promotion_image_name: "{{ docker.registry.host }}/{{ project_name }}/{{ app_name }}"
 
 - name: Pull Build Environment Image

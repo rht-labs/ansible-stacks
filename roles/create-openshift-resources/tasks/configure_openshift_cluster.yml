@@ -1,0 +1,40 @@
+---
+#### Defensive Programming
+# https://github.com/openshift/openshift-ansible/blob/master/docs/best_practices_guide.adoc
+
+- name: "Set Default Cluster Facts"
+  set_fact:
+    openshift_resources_present: false
+    openshift_cluster: "{{ openshift_cluster_item }}" # http://docs.ansible.com/ansible/playbooks_loops.html#loops-and-includes-in-2-0
+
+- name: "Set Variable Cluster Facts"
+  set_fact:
+    openshift_resources_present: true
+  when: openshift_cluster.openshift_resources is defined and openshift_cluster.openshift_resources != "" and openshift_cluster.openshift_resources|length > 0
+
+- name: Fail for Missing User Name
+  fail: msg="This role requires openshift_user to be set and non empty"
+  when: openshift_resources_present == true and openshift_user is not defined or openshift_user == ''
+
+- name: Fail for Missing Password
+  fail: msg="This role requires openshift_password to be set and non empty"
+  when: openshift_resources_present == true and openshift_password is not defined or openshift_password == ''
+
+- name: "Fail for Missing OpenShift Host Env"
+  fail: msg="This role requires openshift_host_env to be set and non empty"
+  when: openshift_resources_present == true and openshift_host_env is not defined or openshift_host_env == ""
+
+- name: "Log in to OpenShift Client"
+  command: >
+    {{ openshift.common.client_binary }} login {{ openshift_host_env }}
+    --insecure-skip-tls-verify=true --username={{ openshift_user }} --password={{ openshift_password }}
+  changed_when: False
+  when: openshift_resources_present == true
+
+- include: create_openshift_resources.yml
+  when: openshift_resources_present == true
+
+- name: "Alert User No OpenShift Resources Were Declared"
+  debug:
+    msg: "There were no openshift_resources set for your openshift_cluster. This is the key data for this role, so you may want to check that you do not have typo in the request."
+  when: openshift_resources_present == false

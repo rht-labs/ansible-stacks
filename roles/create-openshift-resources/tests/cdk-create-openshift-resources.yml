@@ -1,12 +1,11 @@
 ---
-# To run this test, you need to pass in the openshift password
-# e.g. ansible-playbook local-create-ose-project.yml -i inventory -e "openshift_password=your_password"
+# This test covers the full feature set provided by the role
 
 - name: "Create test resources"
-  hosts: localhost
+  hosts: cdk
 
   vars_files:
-    - vars/openshift_resources.json
+    - vars/openshift_resources_simple.json
     - vars/cdk_2.0_env.yml
 
 # roles under test
@@ -19,4 +18,4 @@
     command: >
       {{ openshift.common.client_binary }} delete project {{ item.name  }}
     when: '"{{ item.name }}" != "ci"'
-    with_items: '{{ openshift_resources_to_create.projects }}'
+    with_items: '{{ openshift_resources.projects }}'

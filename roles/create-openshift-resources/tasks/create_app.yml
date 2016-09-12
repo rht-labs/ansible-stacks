@@ -41,28 +41,34 @@
     app_options: "{{ app_options }} --name={{ app.name }}"
   when: app.name is defined and app.name != ''
 
-# TODO: Not sure why the variable scoping requires this
-- name: "Set Labels Fact"
+
+
+- name: "Set Variable Labels Fact"
   set_fact:
     labels: "{{ app.labels }}"
   when: app.labels is defined and app.labels != '' and app.labels|length > 0
 
+# http://docs.ansible.com/ansible/playbooks_roles.html#dynamic-versus-static-includes
 - include: create_labels_string.yml
   when: labels is defined and labels != ''
+  static: no
 
 - name: "Add labels_string to app_options"
   set_fact:
     app_options: "{{ app_options }} {{ labels_string }}"
   when: labels_string is defined and labels_string != ''
 
-# TODO: Not sure why the variable scoping requires this
+
+
 - name: "Set Environment_Variables Fact"
   set_fact:
     environment_variables: "{{ app.environment_variables }}"
   when: app.environment_variables is defined and app.environment_variables != '' and app.environment_variables|length > 0
 
+# http://docs.ansible.com/ansible/playbooks_roles.html#dynamic-versus-static-includes
 - include: create_environment_variables_string.yml
   when: environment_variables is defined and environment_variables != ''
+  static: no
 
 - name: "Add environment_variables_string to app_options"
   set_fact:
@@ -90,7 +96,7 @@
   delay: 5
   ignore_errors: yes
 
-## This is confusing to me. Dunno why the app_item is not passed to the includes context...
+# http://docs.ansible.com/ansible/playbooks_loops.html#loops-and-includes-in-2-0
 - name: Set Facts
   set_fact:
     app_name: "{{ app.name }}"

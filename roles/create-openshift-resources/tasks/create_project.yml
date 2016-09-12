@@ -1,4 +1,7 @@
 ---
+#### Defensive Programming
+# https://github.com/openshift/openshift-ansible/blob/master/docs/best_practices_guide.adoc
+
 - name: Fail for Missing Project Name
   fail: msg="This role requires project.name to be set and non empty"
   when: project.name is not defined or project.name == ''
@@ -7,7 +10,7 @@
   set_fact:
     project_options: ''
 
-- name: "Create Imagestream Fact For Build Environment"
+- name: "Set Imagestream Fact For Build Environment"
   set_fact:
     imagestream_names: []
     build_project_name: "{{ project.name }}"
