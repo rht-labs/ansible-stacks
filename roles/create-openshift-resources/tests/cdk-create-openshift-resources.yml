@@ -4,13 +4,13 @@
 
 - name: "Create test resources"
   hosts: localhost
-  
+
   vars_files:
-    - openshift_resources.json
-  
-# roles under test      
+    - vars/openshift_resources.json
+    - vars/cdk_2.0_env.yml
+
+# roles under test
   roles:
-    - openshift-defaults
     - create-openshift-resources
 
 # cleanup

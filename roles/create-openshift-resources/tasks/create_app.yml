@@ -1,7 +1,7 @@
 ---
-- name: Fail for Missing git url and base image
-  fail: msg="This role requires app.git_url or app.base_image to be set and non empty"
-  when: app.git_url is not defined and app.base_image is not defined
+- name: Fail for Missing scm_url and base image
+  fail: msg="This role requires app.scm_url or app.base_image to be set and non empty"
+  when: app.scm_url is not defined and app.base_image is not defined
 
 - name: Fail for Missing app name
   fail: msg="This role requires app.name to be set and non empty"
@@ -18,18 +18,18 @@
 
 - name: "Set App Source with Git Url and Base Image"
   set_fact:
-    app_source: "{{ app.base_image }}~{{ app.git_url }}"
-  when: app.git_url is defined and app.git_url != '' and app.base_image is defined and app.base_image != ''
+    app_source: "{{ app.base_image }}~{{ app.scm_url }}"
+  when: app.scm_url is defined and app.scm_url != '' and app.base_image is defined and app.base_image != ''
 
 - name: "Set App Source with only Base Image"
   set_fact:
     app_options: "{{ app_options }} --image-stream={{ app.base_image }}"
-  when: (app.base_image is defined and app.base_image != '') and (app.git_url is not defined or app.git_url == '')
+  when: (app.base_image is defined and app.base_image != '') and (app.scm_url is not defined or app.scm_url == '')
 
 - name: "Set App Source with only Git Url"
   set_fact:
-    app_source: "{{ app.git_url }}"
-  when: (app.git_url is defined and app.git_url != '') and (app.base_image is not defined or app.base_image == '')
+    app_source: "{{ app.scm_url }}"
+  when: (app.scm_url is defined and app.scm_url != '') and (app.base_image is not defined or app.base_image == '')
 
 - name: "Add context-dir Option"
   set_fact:
@@ -41,7 +41,8 @@
     app_options: "{{ app_options }} --name={{ app.name }}"
   when: app.name is defined and app.name != ''
 
-- name: "Set Labels Fact (Not Sure Why I Need To)"
+# TODO: Not sure why the variable scoping requires this
+- name: "Set Labels Fact"
   set_fact:
     labels: "{{ app.labels }}"
   when: app.labels is defined and app.labels != '' and app.labels|length > 0
@@ -54,7 +55,8 @@
     app_options: "{{ app_options }} {{ labels_string }}"
   when: labels_string is defined and labels_string != ''
 
-- name: "Set Environment_Variables Fact (Not Sure Why I Need To)"
+# TODO: Not sure why the variable scoping requires this
+- name: "Set Environment_Variables Fact"
   set_fact:
     environment_variables: "{{ app.environment_variables }}"
   when: app.environment_variables is defined and app.environment_variables != '' and app.environment_variables|length > 0
@@ -89,7 +91,7 @@
   ignore_errors: yes
 
 ## This is confusing to me. Dunno why the app_item is not passed to the includes context...
-- name: Set Facts Not Sure Why
+- name: Set Facts
   set_fact:
     app_name: "{{ app.name }}"
     project_name: "{{ project.name }}"
@@ -115,7 +117,7 @@
   command: >
      {{ openshift.common.client_binary }} get istag {{ app.name }}:latest -n {{ project.name }} -o json
   register: get_build_imagestream_result
-  when: build_project_name == project.name and app.git_url is defined and app.git_url != ''
+  when: build_project_name == project.name and app.scm_url is defined and app.scm_url != ''
   changed_when: false
   until: get_build_imagestream_result.rc == 0
   retries: 60

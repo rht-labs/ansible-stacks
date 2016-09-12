@@ -25,11 +25,11 @@
 
 - name: "Log in to OpenShift Client"
   command: >
-    {{ openshift.common.client_binary }} login {{ openshift_host_env }} 
+    {{ openshift.common.client_binary }} login {{ openshift_host_env }}
     --insecure-skip-tls-verify=true --username={{ openshift_user }} --password={{ openshift_password }}
   changed_when: False
 
 - include: create_project.yml project={{ project_item }}
   with_items: '{{ openshift_resources_to_create.projects }}'
   loop_control:
-    loop_var: project_item 
+    loop_var: project_item

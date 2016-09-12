@@ -7,12 +7,12 @@
 
   vars:
     app_name: infographic
-    project_name: ci-stage  
+    project_name: ci-stage
     build_project_name: ci
 
 
   vars_files:
-    - openshift_resources_simple.json
+    - vars/openshift_resources_simple.json
 
   roles:
     - openshift-defaults
@@ -20,7 +20,7 @@
   post_tasks:
     - name: "Log in to OpenShift Client"
       command: >
-        {{ openshift.common.client_binary }} login {{ openshift_host_env }} 
+        {{ openshift.common.client_binary }} login {{ openshift_host_env }}
         --insecure-skip-tls-verify=true --username={{ openshift_user }} --password={{ openshift_password }}
       changed_when: False
     - include: ../tasks/promote_image.yml
