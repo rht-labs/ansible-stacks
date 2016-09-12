@@ -12,4 +12,4 @@ This repository does not cover hosting infrastructure provisioning or the instal
 - https://github.com/openshift/openshift-ansible-contrib
 
 ## Contributing
-See the [contributors guide](CONTRIBUTING.md).
+See the [contributors guide](https://github.com/rht-labs/api-design/blob/master/CONTRIBUTING.md).
