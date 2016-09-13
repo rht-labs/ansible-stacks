@@ -20,6 +20,8 @@
   set_fact:
     app_options: ''
     app_source: ''
+    labels: ''
+    environment_variables: ''
 
 - name: "Set App Source with Git Url and Base Image"
   set_fact:
