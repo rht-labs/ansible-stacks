@@ -104,7 +104,7 @@
   ignore_errors: yes
 
 # http://docs.ansible.com/ansible/playbooks_loops.html#loops-and-includes-in-2-0
-- name: Set Facts
+- name: Set Facts for promote_image.yml includes
   set_fact:
     app_name: "{{ app.name }}"
     project_name: "{{ project.name }}"
