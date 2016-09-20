@@ -23,7 +23,7 @@
     labels: ''
     environment_variables: ''
 
-- name: "Set App Source with Git Url and Base Image"
+- name: "Set App Source with SCM Url and Base Image"
   set_fact:
     app_source: "{{ app.base_image }}~{{ app.scm_url }}"
   when: app.scm_url is defined and app.scm_url != '' and app.base_image is defined and app.base_image != ''
@@ -33,7 +33,7 @@
     app_options: "{{ app_options }} --image-stream={{ app.base_image }}"
   when: (app.base_image is defined and app.base_image != '') and (app.scm_url is not defined or app.scm_url == '')
 
-- name: "Set App Source with only Git Url"
+- name: "Set App Source with only SCM Url"
   set_fact:
     app_source: "{{ app.scm_url }}"
   when: (app.scm_url is defined and app.scm_url != '') and (app.base_image is not defined or app.base_image == '')
