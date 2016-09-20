@@ -13,12 +13,7 @@
                 "name": "infographic",
                 "scm_url": "https://github.com/rht-labs/infographic.git",
                 "context_dir": "website",
-                "base_image": "openshift/php",
-                "labels" :
-                {
-                  "test" : "label",
-                  "foo" : "bar"
-                }
+                "base_image": "openshift/php"
               },
               {
                 "name": "infographic-node-app",
@@ -33,31 +28,36 @@
             "user_to_role": [
               {
                 "user": {
-                  "user_name": "admin"
-                },
-                "roles": [
-                  {
-                    "name": "basic-user"
-                  }
-                ]
-              },
-              {
-                "user": {
-                  "user_name": "openshift-dev"
+                  "user_name": "test"
                 },
                 "roles": [
                   {
                     "name": "admin"
-                  },
-                  {
-                    "name": "basic-user"
                   }
                 ]
+              }
+            ]
+          },
+          {
+            "name": "ci-stage",
+            "display_name": "Temp Stage CI Support",
+            "promotion_environment": true,
+            "apps": [
+              {
+                "name": "infographic",
+                "base_image": "infographic"
+              },
+              {
+                "base_image": "infographic-node-app",
+                "name": "infographic-node-app"
               }
             ]
           }
         ]
       }
+    },
+    {
+      "id": 2
     }
   ]
 }

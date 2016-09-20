@@ -1,0 +1,26 @@
+---
+#### Defensive Programming
+# https://github.com/openshift/openshift-ansible/blob/master/docs/best_practices_guide.adoc
+
+- name: "Set Default Resources Facts"
+  set_fact:
+    projects_present: false
+    openshift_resources: "{{ openshift_cluster.openshift_resources }}" # http://docs.ansible.com/ansible/playbooks_loops.html#loops-and-includes-in-2-0
+
+- name: "Set Variable projects_present Fact"
+  set_fact:
+    projects_present: true
+  when: openshift_resources.projects is defined and openshift_resources.projects != "" and openshift_resources.projects|length > 0
+
+- include: create_project.yml
+  with_items: '{{ openshift_resources.projects }}'
+  loop_control:
+    loop_var: project_item
+  static: no
+  when: projects_present == true
+
+- name: "Alert User No OpenShift Projects Were Declared"
+  debug:
+    msg: "There were no projects set for your openshift_resources. This is key data for this role, so you may want to check that you do not have typo in the request."
+  when: projects_present == false
+

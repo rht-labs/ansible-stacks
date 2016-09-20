@@ -4,11 +4,11 @@
 
 - name: "Create Infographic Resources"
   hosts: localhost
-  
+
   vars_files:
-    - infographic_resources.json
-  
-# roles under test      
+    - vars/infographic_resources.json
+
+# roles under test
   roles:
     - openshift-defaults
     - create-openshift-resources

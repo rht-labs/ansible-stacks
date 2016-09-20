@@ -1,0 +1,60 @@
+[
+    {
+        "id": 4800978704400384,
+        "labels": {
+            "gu": "lMj"
+        },
+        "openshift_resources_to_create": {
+            "id": -2430612522663936,
+            "projects": [
+                {
+                    "id": 631250842812416,
+                    "display_name": "nqtdZF",
+                    "name": "cllyuxedPGt",
+                    "build_environment": true,
+                    "promotion_environment": false,
+                    "apps": [
+                        {
+                            "id": -38284029853696,
+                            "base_image": "uXnMWobgfLk",
+                            "base_image_tag": "xKhQJmf",
+                            "context_dir": "hKdZR",
+                            "scm_url": "pcxXUG",
+                            "scm_type": "uDBEpeC",
+                            "scm_ref": "YppNAYQkSJ",
+                            "name": "MjIRoiP",
+                            "labels": {
+                                "vutibdad": "aSZIiv"
+                            },
+                            "environment_variables": {
+                                "najononow": "uHorqYfncGe"
+                            }
+                        }
+                    ],
+                    "user_to_role": [
+                        {
+                            "id": -8228083853164544,
+                            "user": {
+                                "id": 4801231608348672,
+                                "email": "wRGchXt",
+                                "first_name": "kwwNMN",
+                                "last_name": "biHrGo"
+                            },
+                            "roles": [
+                                {
+                                    "id": 5538739623297024,
+                                    "name": "zSVxRxExLEd"
+                                }
+                            ]
+                        }
+                    ]
+                }
+            ]
+        },
+        "openshift_host_env": "eUDmA",
+        "image_registry": {
+            "id": -5644508612001792,
+            "host": "Zsj"
+        }
+    }
+]

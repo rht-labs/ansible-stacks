@@ -7,13 +7,13 @@
         "apps": [
           {
             "name": "infographic",
-            "git_url": "https://github.com/sherl0cks/infographic.git",
+            "scm_url": "https://github.com/sherl0cks/infographic.git",
             "context_dir": "website",
             "base_image": "openshift/php"
           },
           {
             "name": "infographic-node-app",
-            "git_url": "https://github.com/sherl0cks/infographic-node-app.git",
+            "scm_url": "https://github.com/sherl0cks/infographic-node-app.git",
             "base_image": "openshift/nodejs"
           }
         ]
@@ -24,7 +24,7 @@
         "apps": [
           {
             "name": "infographic-node-app",
-            "git_url": "https://github.com/mcanoy/infographic-node-app.git",
+            "scm_url": "https://github.com/mcanoy/infographic-node-app.git",
             "base_image": "openshift/nodejs"
           }
         ]
@@ -36,13 +36,13 @@
         "apps": [
           {
             "name": "infographic",
-            "git_url": "https://github.com/rht-labs/infographic.git",
+            "scm_url": "https://github.com/rht-labs/infographic.git",
             "context_dir": "website",
             "base_image": "openshift/php"
           },
           {
             "name": "infographic-node-app",
-            "git_url": "https://github.com/rht-labs/infographic-node-app.git",
+            "scm_url": "https://github.com/rht-labs/infographic-node-app.git",
             "base_image": "openshift/nodejs"
           }
         ]

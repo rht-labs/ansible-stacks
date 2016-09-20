@@ -1,0 +1,15 @@
+---
+openshift_host_env: 10.1.2.2:8443
+openshift_user: "admin"
+openshift_password: "admin"
+openshift:
+  common:
+    client_binary: "oc"
+    admin_binary: "oadm"
+docker:
+  common:
+    client_binary: "docker"
+  registry:
+    host: hub.openshift.rhel-cdk.10.1.2.2.xip.io
+  user:
+    email: Rhc-open-innovation-labs@redhat.com
