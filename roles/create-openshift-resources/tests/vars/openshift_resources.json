@@ -10,15 +10,15 @@
             "build_environment": true,
             "apps": [
               {
+                "name": "infographic-node-app",
+                "scm_url": "https://github.com/rht-labs/infographic-node-app.git",
+                "base_image": "openshift/nodejs"
+              },
+              {
                 "name": "infographic",
                 "scm_url": "https://github.com/rht-labs/infographic.git",
                 "context_dir": "website",
                 "base_image": "openshift/php"
-              },
-              {
-                "name": "infographic-node-app",
-                "scm_url": "https://github.com/rht-labs/infographic-node-app.git",
-                "base_image": "openshift/nodejs"
               },
               {
                 "base_image": "infographic",
@@ -41,6 +41,21 @@
           {
             "name": "ci-stage",
             "display_name": "Temp Stage CI Support",
+            "promotion_environment": true,
+            "apps": [
+              {
+                "name": "infographic",
+                "base_image": "infographic"
+              },
+              {
+                "base_image": "infographic-node-app",
+                "name": "infographic-node-app"
+              }
+            ]
+          },
+          {
+            "name": "ci-prod",
+            "display_name": "Temp Prod CI Support",
             "promotion_environment": true,
             "apps": [
               {
