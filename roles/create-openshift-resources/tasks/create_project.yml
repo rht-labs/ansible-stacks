@@ -59,3 +59,24 @@
     loop_var: app_item
   when: apps_present == true
   static: no
+
+## In order to increase performance when more than one app is present in a build env, this check was moved here after create_app.yml so that builds and image pushes can execute in parallel.
+
+# TODO Add a check here to make sure build passed
+
+- name: "Wait For Image To Be Published if Build Environment"
+  command: >
+     {{ openshift.common.client_binary }} get istag {{ app_item_2.name }}:latest -n {{ project.name }} -o json
+  register: get_build_imagestream_result
+  when: build_project_name == project.name and app_item_2.scm_url is defined and app_item_2.scm_url != ''
+  changed_when: false
+  until: get_build_imagestream_result.rc == 0
+  retries: 60
+  delay: 5  # this is 5 min
+  with_items: '{{ project.apps }}'
+  loop_control:
+    loop_var: app_item_2
+
+- name: "Set Facts At The End of {{ project.name }}"
+  set_fact:
+    last_used_project_name: "{{ project.name }}"

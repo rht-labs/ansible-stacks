@@ -110,7 +110,15 @@
     project_name: "{{ project.name }}"
   when: get_app_name_result.rc == 1 and project.promotion_environment is defined and project.promotion_environment == true
 
-- include: promote_image.yml
+
+## this is currently disabled until https://github.com/rht-labs/api-design/issues/28 is resolved
+## we are defaulting to oc tag for promotions
+## this has the lovely benefit of getting around docker 1.9 syntax issues in the current CDK
+
+#- include: promote_image_docker.yml
+#  when: get_app_name_result.rc == 1 and project.promotion_environment is defined and project.promotion_environment == true
+
+- include: promote_image_oc.yml
   when: get_app_name_result.rc == 1 and project.promotion_environment is defined and project.promotion_environment == true
 
 - name: "Create App: {{ app.name }}"
@@ -123,15 +131,3 @@
   command: >
     {{ openshift.common.client_binary }} expose service {{ app.name }} -n {{ project.name }}
   when: get_app_name_result.rc == 1 and create_app_result.rc == 0
-
-  # TODO Add a check here to make sure build passed
-
-- name: "Wait For Image To Be Published if Build Environment"
-  command: >
-     {{ openshift.common.client_binary }} get istag {{ app.name }}:latest -n {{ project.name }} -o json
-  register: get_build_imagestream_result
-  when: build_project_name == project.name and app.scm_url is defined and app.scm_url != ''
-  changed_when: false
-  until: get_build_imagestream_result.rc == 0
-  retries: 60
-  delay: 5 # this is 5 min

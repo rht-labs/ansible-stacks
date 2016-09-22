@@ -5,7 +5,7 @@
   hosts: cdk
 
   vars_files:
-    - vars/openshift_resources.json
+    - vars/openshift_resources_simple.json
     - vars/cdk_2.0_env.yml
 
   pre_tasks:
