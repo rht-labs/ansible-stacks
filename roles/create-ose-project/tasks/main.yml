@@ -1,7 +1,7 @@
 ---
 - name: "Log in to OpenShift Client"
   command: >
-    {{ openshift.common.client_binary }} login {{ openshift_host_env }} 
+    {{ openshift.common.client_binary }} login {{ openShift_host_env }} 
     --insecure-skip-tls-verify=true --username={{ openshift_user }} --password={{ openshift_password }}
   changed_when: False
 

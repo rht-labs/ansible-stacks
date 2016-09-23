@@ -5,7 +5,7 @@
   hosts: cdk
 
   vars_files:
-    - vars/openshift_resources_simple.json
+    - vars/labs_env.json
 
   vars:
     openshift_password: admin

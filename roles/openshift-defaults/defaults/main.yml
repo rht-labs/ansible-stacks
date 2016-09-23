@@ -1,17 +1,8 @@
 ---
-jenkins_host_env: demo-jenkins.innovation.redhat.com:8080
-openshift_host_env: env3-1-master.innovation.labs.redhat.com
-openshift_user: "joe"
-openshift_password: ""
-openshift_project_name: ""
 openshift:
   common:
-    client_binary: "oc"  
+    client_binary: "oc"
+    admin_binary: "oadm"
 docker:
   common:
     client_binary: "docker"
-  registry:
-    host: registry.env3-1.innovation.labs.redhat.com
-  user:
-    email: Rhc-open-innovation-labs@redhat.com  
-

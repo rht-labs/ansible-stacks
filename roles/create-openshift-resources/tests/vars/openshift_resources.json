@@ -1,8 +1,10 @@
 {
-  "openshift_clusters": [
+  "openShift_clusters": [
     {
       "id": 1,
-      "openshift_resources": {
+      "openShift_host_env": "10.1.2.2:8443",
+      "userId": "admin",
+      "openShift_resources": {
         "projects": [
           {
             "name": "ci-dev",
@@ -70,9 +72,6 @@
           }
         ]
       }
-    },
-    {
-      "id": 2
     }
   ]
 }
