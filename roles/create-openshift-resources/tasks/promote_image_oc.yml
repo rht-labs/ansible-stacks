@@ -7,7 +7,7 @@
 
 - name: Add OpenShift Image Pull Policy
   command: >
-    {{ openshift.common.client_binary }} policy add-role-to-group system:image-puller system:serviceaccounts:{{ project_name }} -n {{ last_used_project_name }}
+    {{ openshift.common.client_binary }} policy add-role-to-group system:image-puller system:serviceaccounts:{{ project_name }} -n {{ build_project_name }}
 
 - name: "Create Image Stream in {{ project_name }} from Image Stream in {{ last_used_project_name }}"
   command: >

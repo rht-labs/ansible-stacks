@@ -1,8 +1,8 @@
 ---
 
 - include: configure_openshift_cluster.yml
-  with_items: '{{ openshift_clusters }}'
+  with_items: '{{ openShift_clusters }}'
   loop_control:
-    loop_var: openshift_cluster_item
-  when: openshift_clusters is defined and openshift_clusters != "" and openshift_clusters|length > 0
+    loop_var: openShift_cluster_item
+  when: openShift_clusters is defined and openShift_clusters != "" and openShift_clusters|length > 0
 

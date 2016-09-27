@@ -6,13 +6,12 @@
 
   vars_files:
     - vars/openshift_resources.json
-    - vars/cdk_2.0_env.yml
 
-  pre_tasks:
+  vars:
+    openshift_password: admin
 
-
-# roles under test
   roles:
+    - openshift-defaults
     - create-openshift-resources
 
 # cleanup
@@ -21,4 +20,4 @@
     command: >
       {{ openshift.common.client_binary }} delete project {{ item.name  }}
     when: '"{{ item.name }}" != "ci" and cleanup is defined and cleanup'
-    with_items: '{{ openshift_resources.projects }}'
+    with_items: '{{ openShift_resources.projects }}'

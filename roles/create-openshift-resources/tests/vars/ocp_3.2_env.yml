@@ -1,6 +1,6 @@
 ---
 jenkins_host_env: demo-jenkins.innovation.redhat.com:8080
-openshift_host_env: master1.env2-1.innovation.labs.redhat.com
+openShift_host_env: master1.env2-1.innovation.labs.redhat.com
 openshift_user: "rhoil_deployer"
 openshift_password: ""
 openshift_project_name: ""

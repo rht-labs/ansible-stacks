@@ -1,0 +1,71 @@
+{
+	"openShift_clusters": [
+		{
+			"id": 1,
+			"openShift_host_env": "10.1.2.2:8443",
+			"userId" : "admin",
+			"openShift_resources": {
+				"projects": [
+					{
+						"name": "ci-dev",
+						"display_name": "Temp Dev CI Support",
+						"build_environment": true,
+						"apps": [
+							{
+								"name": "infographic-node-app",
+								"scm_url": "https://github.com/rht-labs/infographic-node-app.git",
+								"base_image": "openshift/nodejs",
+								"build_tool": "node-4",
+								"build_application_commands": [
+									"npm install",
+									"npm run-script ci"
+								]
+							},
+							{
+								"name": "infographic",
+								"scm_url": "https://github.com/rht-labs/infographic.git",
+								"context_dir": "website",
+								"base_image": "openshift/php",
+								"build_tool": "node-4",
+								"build_application_commands": [
+									"npm install",
+									"npm run-script ci"
+								]
+							}
+						]
+					},
+					{
+						"name": "ci-stage",
+						"display_name": "Temp Stage CI Support",
+						"promotion_environment": true,
+						"apps": [
+							{
+								"name": "infographic",
+								"base_image": "infographic"
+							},
+							{
+								"base_image": "infographic-node-app",
+								"name": "infographic-node-app"
+							}
+						]
+					},
+					{
+						"name": "ci-prod",
+						"display_name": "Temp Prod CI Support",
+						"promotion_environment": true,
+						"apps": [
+							{
+								"name": "infographic",
+								"base_image": "infographic"
+							},
+							{
+								"base_image": "infographic-node-app",
+								"name": "infographic-node-app"
+							}
+						]
+					}
+				]
+			}
+		}
+	]
+}
