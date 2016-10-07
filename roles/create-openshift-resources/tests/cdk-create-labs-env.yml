@@ -20,4 +20,4 @@
     command: >
       {{ openshift.common.client_binary }} delete project {{ item.name  }}
     when: '"{{ item.name }}" != "ci" and cleanup is defined and cleanup'
-    with_items: '{{ openShift_resources.projects }}'
+    with_items: '{{ openshift_resources.projects }}'
