@@ -4,37 +4,37 @@
 
 - name: "Set Default Cluster Facts"
   set_fact:
-    openShift_resources_present: false
-    openShift_cluster: "{{ openShift_cluster_item }}" # http://docs.ansible.com/ansible/playbooks_loops.html#loops-and-includes-in-2-0
+    openshift_resources_present: false
+    openshift_cluster: "{{ openshift_cluster_item }}" # http://docs.ansible.com/ansible/playbooks_loops.html#loops-and-includes-in-2-0
 
 - name: "Set Variable Cluster Facts"
   set_fact:
-    openShift_resources_present: true
-  when: openShift_cluster.openShift_resources is defined and openShift_cluster.openShift_resources != "" and openShift_cluster.openShift_resources|length > 0
+    openshift_resources_present: true
+  when: openshift_cluster.openshift_resources is defined and openshift_cluster.openshift_resources != "" and openshift_cluster.openshift_resources|length > 0
 
 - name: Fail for Missing User Name
   fail: msg="This role requires openshift_user to be set and non empty"
-  when: openShift_resources_present == true and openShift_cluster.userId is not defined or openShift_cluster.userId == ''
+  when: openshift_resources_present == true and openshift_cluster.userId is not defined or openshift_cluster.userId == ''
 
 - name: Fail for Missing Password
   fail: msg="This role requires openshift_password to be set and non empty"
-  when: openShift_resources_present == true and openshift_password is not defined or openshift_password == ''
+  when: openshift_resources_present == true and openshift_password is not defined or openshift_password == ''
 
 - name: "Fail for Missing OpenShift Host Env"
-  fail: msg="This role requires openShift_cluster.openShift_host_env to be set and non empty"
-  when: openShift_resources_present == true and openShift_cluster.openShift_host_env is not defined or openShift_cluster.openShift_host_env == ""
+  fail: msg="This role requires openshift_cluster.openshift_host_env to be set and non empty"
+  when: openshift_resources_present == true and openshift_cluster.openshift_host_env is not defined or openshift_cluster.openshift_host_env == ""
 
 - name: "Log in to OpenShift Client"
   command: >
-    {{ openshift.common.client_binary }} login {{ openShift_cluster.openShift_host_env }}
-    --insecure-skip-tls-verify=true --username={{ openShift_cluster.userId }} --password={{ openshift_password }}
+    {{ openshift.common.client_binary }} login {{ openshift_cluster.openshift_host_env }}
+    --insecure-skip-tls-verify=true --username={{ openshift_cluster.userId }} --password={{ openshift_password }}
   changed_when: False
-  when: openShift_resources_present == true
+  when: openshift_resources_present == true
 
 - include: create_openshift_resources.yml
-  when: openShift_resources_present == true
+  when: openshift_resources_present == true
 
 - name: "Alert User No OpenShift Resources Were Declared"
   debug:
-    msg: "There were no openShift_resources set for your openShift_cluster. This is the key data for this role, so you may want to check that you do not have typo in the request."
-  when: openShift_resources_present == false
+    msg: "There were no openshift_resources set for your openshift_cluster. This is the key data for this role, so you may want to check that you do not have typo in the request."
+  when: openshift_resources_present == false
