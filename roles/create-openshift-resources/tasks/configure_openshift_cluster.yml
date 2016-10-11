@@ -14,7 +14,7 @@
 
 - name: Fail for Missing User Name
   fail: msg="This role requires openshift_user to be set and non empty"
-  when: openshift_resources_present == true and openshift_cluster.userId is not defined or openshift_cluster.userId == ''
+  when: openshift_resources_present == true and openshift_user is not defined or openshift_user == ''
 
 - name: Fail for Missing Password
   fail: msg="This role requires openshift_password to be set and non empty"
@@ -27,7 +27,7 @@
 - name: "Log in to OpenShift Client"
   command: >
     {{ openshift.common.client_binary }} login {{ openshift_cluster.openshift_host_env }}
-    --insecure-skip-tls-verify=true --username={{ openshift_cluster.userId }} --password={{ openshift_password }}
+    --insecure-skip-tls-verify=true --username={{ openshift_user }} --password={{ openshift_password }}
   changed_when: False
   when: openshift_resources_present == true
 

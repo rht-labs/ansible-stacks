@@ -1,0 +1,22 @@
+---
+
+# TODO: find a better home for this binary
+- name: "Git clone project"
+  git:
+    repo: "{{ app.scm_url }}"
+    version: "{{ app.scm_ref }}"
+    dest: git
+
+- name: "Make Target dir for Fabric8 Java S2I Builds"
+  file: 
+    path: git/target
+    state: directory
+
+- name: "Download Hello World App for Fabric8 Java S2I Builds"
+  get_url:
+    url: https://github.com/sherl0cks/files/raw/master/hello-world.jar
+    dest: git/target/
+
+- name: "Run Binary Build For Fabric8 Java S2I Builds"
+  command: >
+    {{ openshift.common.client_binary }} start-build {{ app.name }} -n {{ project.name }} --from-dir=git/ --follow

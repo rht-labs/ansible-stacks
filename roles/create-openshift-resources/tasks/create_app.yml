@@ -20,23 +20,35 @@
   set_fact:
     app_options: ''
     app_source: ''
+    app_scm: ''
     labels: ''
     environment_variables: ''
+    is_fabric8_java_s2i: false
+
+- name: "Set oc new-app friendly SCM with both SCM URL and SCM Ref"
+  set_fact:
+    app_scm: "{{ app.scm_url }}#{{ app.scm_ref }}"
+  when: app.scm_url is defined and app.scm_url != '' and app.scm_ref is defined and app.scm_ref != ''
+
+- name: "Set oc new-app friendly SCM with only SCM URL"
+  set_fact:
+    app_scm: "{{ app.scm_url }}"
+  when: app.scm_url is defined and app.scm_url == '' and  app_scm == '' 
 
 - name: "Set App Source with SCM Url and Base Image"
   set_fact:
-    app_source: "{{ app.base_image }}~{{ app.scm_url }}"
-  when: app.scm_url is defined and app.scm_url != '' and app.base_image is defined and app.base_image != ''
+    app_source: "{{ app.base_image }}~{{ app_scm }}"
+  when: app_scm is defined and app_scm != '' and app.base_image is defined and app.base_image != ''
 
 - name: "Set App Source with only Base Image"
   set_fact:
     app_options: "{{ app_options }} --image-stream={{ app.base_image }}"
-  when: (app.base_image is defined and app.base_image != '') and (app.scm_url is not defined or app.scm_url == '')
+  when: (app.base_image is defined and app.base_image != '') and (app_scm is not defined or app_scm == '')
 
 - name: "Set App Source with only SCM Url"
   set_fact:
-    app_source: "{{ app.scm_url }}"
-  when: (app.scm_url is defined and app.scm_url != '') and (app.base_image is not defined or app.base_image == '')
+    app_source: "{{ app_scm }}"
+  when: (app_scm is defined and app_scm != '') and (app.base_image is not defined or app.base_image == '')
 
 - name: "Add context-dir Option"
   set_fact:
@@ -82,6 +94,13 @@
     app_options: "{{ app_options }} {{ environment_variables_string }}"
   when: environment_variables_string is defined and environment_variables_string != ''
 
+
+- name: "Set Fact for Fabric Java S2I"
+  set_fact:
+    is_fabric8_java_s2i: true
+  when: app.labels.provider is defined and app.labels.provider == 'fabric8'
+
+
 - name: "Determine if {{ app.name }} App Exists"
   command: >
      {{ openshift.common.client_binary }} get dc {{ app.name }} -n {{ project.name }} -o json
@@ -89,26 +108,12 @@
   failed_when: false
   changed_when: false
 
-# This covers the corner case where we are making an app from an imagestream in the same workspace
-# Was useful in testing, not sure if really needed
-- name: "Determine if {{ app.base_image }} Imagestream Exists"
-  command: >
-     {{ openshift.common.client_binary }} get istag {{ app.base_image }}:latest -n {{ project.name }} -o json
-  register: get_imagestream_result
-  when: ( not ('/' in app.base_image) ) and build_project_name == project.name
-  failed_when: false
-  changed_when: false
-  until: get_imagestream_result.rc == 0
-  retries: 12
-  delay: 5
-  ignore_errors: yes
-
 # http://docs.ansible.com/ansible/playbooks_loops.html#loops-and-includes-in-2-0
 - name: Set Facts for promote_image.yml includes
   set_fact:
     app_name: "{{ app.name }}"
     project_name: "{{ project.name }}"
-  when: get_app_name_result.rc == 1 and project.promotion_environment is defined and project.promotion_environment == true
+  when: get_app_name_result.rc == 1 and project.environment_type is defined and project.environment_type == 'promotion'
 
 
 ## this is currently disabled until https://github.com/rht-labs/api-design/issues/28 is resolved
@@ -116,16 +121,19 @@
 ## this has the lovely benefit of getting around docker 1.9 syntax issues in the current CDK
 
 #- include: promote_image_docker.yml
-#  when: get_app_name_result.rc == 1 and project.promotion_environment is defined and project.promotion_environment == true
+#  when: get_app_name_result.rc == 1 and project.environment_type is defined and project.environment_type == true
 
 - include: promote_image_oc.yml
-  when: get_app_name_result.rc == 1 and project.promotion_environment is defined and project.promotion_environment == true
+  when: get_app_name_result.rc == 1 and project.environment_type is defined and project.environment_type == 'promotion'
 
 - name: "Create App: {{ app.name }}"
   command: >
     {{ openshift.common.client_binary }} new-app {{ app_source }} -n {{ project.name }} {{ app_options }}
   when: get_app_name_result.rc == 1
   register: create_app_result
+
+- include: fabric8_java_s2i_build.yml
+  when: is_fabric8_java_s2i is defined and is_fabric8_java_s2i == true
 
 - name: "Expose App: {{ app.name }}"
   command: >
