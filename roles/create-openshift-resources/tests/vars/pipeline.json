@@ -1,0 +1,47 @@
+{
+	"openshift_clusters": [
+		{
+			"openshift_host_env": "10.1.2.2:8443",
+			"openshift_resources": {
+				"projects": [
+					{
+						"name": "pipeline-dev",
+						"display_name": "Pipeline - Dev",
+						"environment_type": "build",
+						"apps": [
+							{
+								"name": "jenkins",
+								"scm_url": "https://github.com/sherl0cks/openshift-jenkins-s2i-config.git",
+								"scm_ref": "fixing-seed-jobs",
+                               	"base_image": "jenkins",
+								"build_tool": "s2i"
+							}
+						]
+					},
+					{
+						"name": "pipeline-uat",
+						"display_name": "Pipeline - UAT",
+						"environment_type": "promotion",
+						"apps": [
+							{
+								"name": "jenkins",
+								"base_image": "jenkins"
+							}
+						]
+					},
+					{
+						"name": "pipeline-delivery",
+						"display_name": "Pipeline - Delivery",
+						"environment_type": "promotion",
+						"apps": [
+							{
+								"name": "jenkins",
+								"base_image": "jenkins"
+							}
+						]
+					}
+				]
+			}
+		}
+	]
+}

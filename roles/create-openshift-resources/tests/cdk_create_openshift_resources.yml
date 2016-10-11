@@ -5,10 +5,11 @@
   hosts: cdk
 
   vars_files:
-    - vars/openshift_resources_simple.json
+    - vars/openshift_resources.json
 
   vars:
     openshift_password: admin
+    openshift_user: admin
 
   roles:
     - openshift-defaults
