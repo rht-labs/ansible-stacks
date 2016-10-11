@@ -9,6 +9,7 @@
 
   vars:
     openshift_password: admin
+    openshift_user: admin
 
   roles:
     - openshift-defaults

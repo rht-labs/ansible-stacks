@@ -33,7 +33,7 @@
 - name: "Set oc new-app friendly SCM with only SCM URL"
   set_fact:
     app_scm: "{{ app.scm_url }}"
-  when: app.scm_url is defined and app.scm_url == '' and  app_scm == '' 
+  when: app.scm_url is defined and app.scm_url != '' and  app_scm == '' 
 
 - name: "Set App Source with SCM Url and Base Image"
   set_fact:

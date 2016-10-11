@@ -9,7 +9,7 @@
           {
             "name": "ci-dev",
             "display_name": "Temp Dev CI Support",
-            "build_environment": true,
+            "environment_type": "build",
             "apps": [
               {
                 "name": "infographic-node-app",
@@ -21,10 +21,6 @@
                 "scm_url": "https://github.com/rht-labs/infographic.git",
                 "context_dir": "website",
                 "base_image": "openshift/php"
-              },
-              {
-                "base_image": "infographic",
-                "name": "test"
               }
             ],
             "user_to_role": [
@@ -43,7 +39,7 @@
           {
             "name": "ci-stage",
             "display_name": "Temp Stage CI Support",
-            "promotion_environment": true,
+            "environment_type": "promotion",
             "apps": [
               {
                 "name": "infographic",
@@ -58,7 +54,7 @@
           {
             "name": "ci-prod",
             "display_name": "Temp Prod CI Support",
-            "promotion_environment": true,
+            "environment_type": "promotion",
             "apps": [
               {
                 "name": "infographic",
