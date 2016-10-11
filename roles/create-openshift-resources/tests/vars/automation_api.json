@@ -19,7 +19,7 @@
 								],
                                 "build_image_commands" : [
 									"oc login 10.1.2.2:8443 --token=$OPENSHIFT_API_TOKEN --insecure-skip-tls-verify",
-                                    "oc start-build automation-api --from-dir=. -n labs-api-dev"
+                                    "oc start-build automation-api --from-dir=. --follow -n labs-api-dev"
                                 ],
 								"labels" : {
 									"provider": "fabric8"
