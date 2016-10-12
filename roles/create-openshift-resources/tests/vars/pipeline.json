@@ -19,17 +19,6 @@
 						]
 					},
 					{
-						"name": "pipeline-uat",
-						"display_name": "Pipeline - UAT",
-						"environment_type": "promotion",
-						"apps": [
-							{
-								"name": "jenkins",
-								"base_image": "jenkins"
-							}
-						]
-					},
-					{
 						"name": "pipeline-delivery",
 						"display_name": "Pipeline - Delivery",
 						"environment_type": "promotion",

@@ -23,6 +23,7 @@
     app_scm: ''
     labels: ''
     environment_variables: ''
+    environment_variables_string: ''
     is_fabric8_java_s2i: false
 
 - name: "Set oc new-app friendly SCM with both SCM URL and SCM Ref"
