@@ -23,18 +23,10 @@
                                 ],
 								"labels" : {
 									"provider": "fabric8"
+								},
+								"environment_variables" : {
+									"foo" : "bar"
 								}
-							}
-						]
-					},
-					{
-						"name": "labs-api-uat",
-						"display_name": "Labs API - UAT",
-						"environment_type": "promotion",
-						"apps": [
-							{
-								"name": "automation-api",
-								"base_image": "automation-api"
 							}
 						]
 					},
@@ -47,6 +39,7 @@
 								"name": "automation-api",
 								"base_image": "automation-api"
 							}
+
 						]
 					}
 				]
