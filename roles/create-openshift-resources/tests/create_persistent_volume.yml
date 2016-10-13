@@ -1,0 +1,33 @@
+---
+# This test covers the full feature set provided by the role
+
+- name: "Create test resources"
+  hosts: localhost
+
+  vars_files:
+    - vars/persistent_volume.json
+
+#  vars: # use the -e command line option to provide a valid username/password combo
+#    openshift_password: 
+#    openshift_user: 
+
+  roles:
+    - openshift-defaults
+    - create-openshift-resources
+
+# cleanup
+  post_tasks:
+  - name: "Remove project {{ item.name }}"
+    command: >
+      {{ openshift.common.client_binary }} delete project {{ item.name }}
+    when: '"{{ item.name }}" != "ci" and cleanup is defined and cleanup'
+    with_items: '{{ openshift_resources.projects }}'
+
+  - name: "Remove Persistent Volumes used for testing"
+    command: >
+      {{ openshift.common.client_binary }} delete pv {{ item.1.name }}
+    when: 'cleanup is defined and cleanup'
+    with_subelements: 
+    - "{{ openshift_clusters }}"
+    - persistent_volumes 
+

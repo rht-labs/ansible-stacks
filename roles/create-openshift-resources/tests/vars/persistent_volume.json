@@ -1,0 +1,112 @@
+{
+	"openshift_clusters": [
+		{
+			"openshift_host_env": "10.1.2.2:8443",
+			"openshift_resources": {
+				"projects": [
+					{
+						"name": "pipeline-dev",
+						"display_name": "Pipeline - Dev",
+						"environment_type": "build",
+						"apps": [
+							{
+								"name": "jenkins",
+								"scm_url": "https://github.com/rht-labs/openshift-jenkins-s2i-config.git",
+								"scm_ref": "master",
+								"base_image": "jenkins",
+								"build_tool": "s2i",
+								"pvc_associations": [
+									{
+										"name": "pipeline-dev-env",
+										"mount_path": "/etc/pipeline-dev-env",
+										"claim_type": {
+											"kind": "claim",
+											"name": "pipeline-dev-env"
+										}
+									}
+								]
+							}
+						],
+						"persistent_volume_claims": [
+							{
+								"name": "pipeline-dev-env",
+								"access_modes": [
+									"ReadOnlyMany"
+								],
+								"storage": 1,
+								"selector": {
+									"match_labels": {
+										"pvc": "pipeline-dev-env"
+									}
+								}
+							}
+						]
+					},
+					{
+						"name": "pipeline-delivery",
+						"display_name": "Pipeline - Delivery",
+						"environment_type": "promotion",
+						"apps": [
+							{
+								"name": "jenkins",
+								"base_image": "jenkins",
+								"pvc_associations": [
+									{
+										"name": "pipeline-dev-env",
+										"mount_path": "/etc/pipeline-dev-env",
+										"claim_type": {
+											"kind": "claim",
+											"name": "pipeline-dev-env"
+										}
+									}
+								]
+							}
+						],
+						"persistent_volume_claims": [
+							{
+								"name": "pipeline-delivery-env",
+								"access_modes": [
+									"ReadOnlyMany"
+								],
+								"storage": 1,
+								"selector": {
+									"match_labels": {
+										"pvc": "pipeline-delivery-env"
+									}
+								}
+							}
+						]
+					}
+				]
+			},
+			"persistent_volumes": [
+				{
+					"name": "pipeline-dev-env",
+					"capacity": 1,
+					"access_modes": [
+						"ReadOnlyMany"
+					],
+					"nfs_path": "/export/dev-env",
+					"nfs_server": "nfs-server-goes-here.com",
+					"reclaim_policy": "Retain",
+					"labels": {
+						"pvc": "pipelin-dev-env"
+					}	
+				},
+				{
+					"name": "pipeline-delivery-env",
+					"capacity": 1,
+					"access_modes": [
+						"ReadOnlyMany"
+					],
+					"nfs_path": "/export/delivery-env",
+					"nfs_server": "nfs-server-goes-here.com",
+					"reclaim_policy": "Retain",
+					"labels": {
+						"pvc": "pipelin-delivery-env"
+					}	
+				}
+			]
+		}
+	]
+}

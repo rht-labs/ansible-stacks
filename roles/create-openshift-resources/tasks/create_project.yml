@@ -24,6 +24,11 @@
     role_bindings_present: true
   when: project.user_to_role is defined and project.user_to_role != "" and project.user_to_role|length > 0
 
+- name: "Set Variable persistent_volume_claims_present Fact"
+  set_fact:
+    persistent_volume_claims_present: true
+  when: project.persistent_volume_claims is defined and project.persistent_volume_claims != "" and project.persistent_volume_claims|length > 0
+
 - name: "Set Variable apps_present Fact"
   set_fact:
     apps_present: true
@@ -51,6 +56,13 @@
   loop_control:
     loop_var: role_binding_item
   when: role_bindings_present == true
+  static: no
+
+- include: create_persistent_volume_claims.yml
+  with_items: '{{ project.persistent_volume_claims }}'
+  loop_control:
+    loop_var: persistent_volume_claims_item
+  when: persistent_volume_claims_present == true
   static: no
 
 - include: create_app.yml
