@@ -4,10 +4,16 @@
 
 - name: "Set Default Cluster Facts"
   set_fact:
+    openshift_persistent_volumes_present: false
     openshift_resources_present: false
     openshift_cluster: "{{ openshift_cluster_item }}" # http://docs.ansible.com/ansible/playbooks_loops.html#loops-and-includes-in-2-0
 
-- name: "Set Variable Cluster Facts"
+- name: "Set Variable openshift_persistent_volumes_present Fact"
+  set_fact:
+    openshift_persistent_volumes_present: true
+  when: openshift_cluster.persistent_volumes is defined and openshift_cluster.persistent_volumes != "" and openshift_cluster.persistent_volumes|length > 0
+
+- name: "Set Variable openshift_resources_present Facts"
   set_fact:
     openshift_resources_present: true
   when: openshift_cluster.openshift_resources is defined and openshift_cluster.openshift_resources != "" and openshift_cluster.openshift_resources|length > 0
@@ -30,6 +36,13 @@
     --insecure-skip-tls-verify=true --username={{ openshift_user }} --password={{ openshift_password }}
   changed_when: False
   when: openshift_resources_present == true
+
+- include: create_persistent_volumes.yml
+  with_items: '{{ openshift_cluster.persistent_volumes }}'
+  loop_control:
+    loop_var: persistent_volumes_item
+  static: no
+  when: openshift_persistent_volumes_present == true
 
 - include: create_openshift_resources.yml
   when: openshift_resources_present == true

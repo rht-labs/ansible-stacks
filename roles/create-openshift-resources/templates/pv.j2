@@ -1,0 +1,21 @@
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: {{ pv.name }} 
+{% if pv.labels is defined and pv.labels != "" %} 
+  labels:
+{% for label in pv.labels %}
+    {{ label }}: {{ pv.labels[label] }}
+{% endfor %}
+{% endif %}
+spec:
+  capacity:
+    storage: {{ pv.capacity }}Gi 
+  accessModes:
+{% for mode in pv.access_modes %}
+  - {{ mode }} 
+{% endfor %}
+  nfs: 
+    path: {{ pv.nfs_path }}
+    server: {{ pv.nfs_server }}
+  persistentVolumeReclaimPolicy: {{ pv.reclaim_policy }}

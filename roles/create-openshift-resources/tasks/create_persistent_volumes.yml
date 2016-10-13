@@ -1,0 +1,42 @@
+---
+- name: "Set Basic Persistent Volume Facts"
+  set_fact:
+    pv: "{{ persistent_volumes_item }}"
+
+- name: Fail for Missing Persistent Volume Parameters
+  fail: msg="This role requires persistent_volumes.{{ item }} be set and non empty"
+  when: pv.{{ item }} is not defined or pv.{{ item }} == ''
+  with_items:
+  - name
+  - capacity
+  - access_modes
+  - nfs_path
+  - nfs_server
+
+- name: "Determine if {{ pv.name }} Persistent Volume Exists"
+  command: >
+     {{ openshift.common.client_binary }} get pv {{ pv.name }} -o json
+  register: get_pv_name_result
+  failed_when: false
+  changed_when: false
+
+- name: "Use a unique temporary file to store the Persistent Volume object"
+  command: mktemp
+  register: tempfile
+  when: get_pv_name_result.rc != 0
+
+- name: "Prepare the object definition for the Persistent Volume"
+  template:
+    src: pv.j2
+    dest: "{{ tempfile.stdout }}"
+  when: get_pv_name_result.rc != 0
+
+- name: "Create Persistent Volume"
+  command: >
+    {{ openshift.common.client_binary }} create -f {{ tempfile.stdout }}
+  when: get_pv_name_result.rc != 0
+
+- name: "Persistent Volume temporary file clean-up"
+  file: path={{ tempfile.stdout }} state=absent  
+  when: get_pv_name_result.rc != 0
+
