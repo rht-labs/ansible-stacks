@@ -12,7 +12,7 @@ This repository does not cover hosting infrastructure provisioning or the instal
 - https://github.com/openshift/openshift-ansible-contrib
 
 ## Requirements
-- These playbooks need ansible 2.1.2.0 as we levverage new features around looping and property scoping
+- These playbooks need ansible 2.1.2.0 as we leverage new features around looping and property scoping
 
 ## Contributing
 See the [contributors guide](https://github.com/rht-labs/api-design/blob/master/CONTRIBUTING.md).
