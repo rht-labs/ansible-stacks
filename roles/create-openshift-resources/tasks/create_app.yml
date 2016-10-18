@@ -24,8 +24,9 @@
     labels: ''
     environment_variables: ''
     environment_variables_string: ''
-    is_fabric8_java_s2i: false
+    fabric8_java_s2i_present: false
     pvc_associations: false
+    routes_present: false
 
 - name: "Set oc new-app friendly SCM with both SCM URL and SCM Ref"
   set_fact:
@@ -99,7 +100,7 @@
 
 - name: "Set Fact for Fabric Java S2I"
   set_fact:
-    is_fabric8_java_s2i: true
+    fabric8_java_s2i_present: true
   when: app.labels.provider is defined and app.labels.provider == 'fabric8'
 
 - name: "Set Fact for Persistent Volume Claim Associations"
@@ -107,6 +108,10 @@
     pvc_associations: true
   when: app.pvc_associations is defined and app.pvc_associations != ''
 
+- name: "Set Fact for Custom Route Present"
+  set_fact:
+    routes_present: true
+  when: app.routes is defined and app.routes | length > 0
 
 - name: "Determine if {{ app.name }} App Exists"
   command: >
@@ -139,8 +144,11 @@
   when: get_app_name_result.rc == 1
   register: create_app_result
 
+- include: configure_networking.yml
+  when: routes_present is defined and routes_present == true
+
 - include: fabric8_java_s2i_build.yml
-  when: is_fabric8_java_s2i is defined and is_fabric8_java_s2i == true
+  when: fabric8_java_s2i_present is defined and fabric8_java_s2i_present == true
 
 - name: "Add Volume to {{ app.name }}"
   with_items: '{{ app.pvc_associations }}'
@@ -153,8 +161,3 @@
       --mount-path={{ volume_associations.mount_path }} \
       -n {{ project.name }}
   when: pvc_associations == true and get_app_name_result.rc != 0 and create_app_result.rc == 0
-
-- name: "Expose App: {{ app.name }}"
-  command: >
-    {{ openshift.common.client_binary }} expose service {{ app.name }} -n {{ project.name }}
-  when: get_app_name_result.rc == 1 and create_app_result.rc == 0
