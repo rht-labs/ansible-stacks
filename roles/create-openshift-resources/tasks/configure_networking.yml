@@ -1,8 +1,15 @@
 ---
-
-- name: Pause to prevent race conditions on the Deployment Config
-  pause: 
-    seconds: 5
+##########################################
+# There is a race condition that can occur in this automation. Here are the steps in which this scenario happens:
+# 1) oc new-app creates a deployment config
+# 2) the below automation retrieves the deployment config, and then updates the deployment config
+# 3) the OpenShift server updates the deployment config on the server side, which renders our automation side copy out of date
+# 4) the automation oc updates the deployment, which fails because the it is out of date
+#
+# To address this scenario, we recursively import this task file (using static: no) in order to force a retry of the entire task list. There is no block retry at this time in ansible.
+#
+# Long term, we should move this to oc patch which should solve avoid the race condition
+##########################################
 
 - name: "Get Deployment Config: {{ app.name }}"
   command: >
@@ -14,6 +21,7 @@
 - name: Set Fact for DC object
   set_fact:
     dc: "{{ dc_response.stdout | from_json }}"
+
 
 - name: Attempt to Apply New Port Specs to Deployment Config
   set_fact: 
@@ -35,16 +43,23 @@
     dest: "{{ tempfile.stdout }}"
   when: update_to_dc_required is defined    
 
-- name: "Apply New Deployment Config"
-  command: >
-    {{ openshift.common.client_binary }} replace dc {{ app.name }} -f {{ tempfile.stdout }} -n {{ project.name }}
-  when: update_to_dc_required is defined
-  register: replace_dc_result
-  until: replace_dc_result.rc == 0
-  retries: 12
-  delay: 5  # this is 1 min 
-  tags:
-  - connected
+- block:
+   
+  - name: "Apply New Deployment Config"
+    command: >
+      {{ openshift.common.client_binary }} replace dc {{ app.name }} -f {{ tempfile.stdout }} -n {{ project.name }}
+    when: update_to_dc_required is defined
+    tags:
+    - connected
+  
+  rescue:
+
+  - name: Retry Pause to prevent race conditions on the Deployment Config
+    pause: 
+      seconds: 2
+
+  - include: configure_networking.yml
+    static: no  
 
 - name: "Deployment Config temporary file clean-up"
   file: 
