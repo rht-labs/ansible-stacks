@@ -1,0 +1,31 @@
+---
+# This test covers the full feature set provided by the role
+
+- name: "Create test resources"
+  hosts: localhost
+
+  vars:
+    project:
+      name: sample-project 
+
+  vars_files:
+  - vars/pipeline.json
+  - vars/deployment_config.json
+
+  pre_tasks:
+  - name: "Set Route Fact"
+    set_fact:
+      app: "{{ openshift_clusters[0].openshift_resources.projects[0].apps[0] }}"
+      route: "{{ openshift_clusters[0].openshift_resources.projects[0].apps[0].routes[0] }}"
+
+  roles:
+  - openshift-defaults
+
+  post_tasks:
+  - include: ../tasks/configure_networking.yml
+# cleanup
+  - name: "Remove project {{ item.name }}"
+    command: >
+      {{ openshift.common.client_binary }} delete project {{ item.name  }}
+    when: '"{{ item.name }}" != "ci" and cleanup is defined and cleanup'
+    with_items: '{{ openshift_resources.projects }}'

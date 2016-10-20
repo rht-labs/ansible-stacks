@@ -4,7 +4,7 @@
 - name: "Git clone project"
   git:
     repo: "{{ app.scm_url }}"
-    version: "{{ app.scm_ref }}"
+    version: "{{ (app.scm_ref is defined and app.scm_ref != '') | ternary(app.scm_ref, 'master' ) }}"
     dest: git
 
 - name: "Make Target dir for Fabric8 Java S2I Builds"

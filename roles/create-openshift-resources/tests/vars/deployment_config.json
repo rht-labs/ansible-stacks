@@ -1,0 +1,180 @@
+{
+    "dc": {
+        "kind": "DeploymentConfig",
+        "apiVersion": "v1",
+        "metadata": {
+            "name": "automation-api",
+            "namespace": "sample-project",
+            "selfLink": "/oapi/v1/namespaces/sample-project/deploymentconfigs/automation-api",
+            "uid": "caae850e-900e-11e6-9af7-525400c3549e",
+            "resourceVersion": "12016",
+            "generation": 5,
+            "creationTimestamp": "2016-10-11T23:59:48Z",
+            "labels": {
+                "group": "com.rhc",
+                "project": "automation-api",
+                "provider": "fabric8",
+                "version": "0.3.0"
+            },
+            "annotations": {
+                "fabric8.io/git-branch": "pr4",
+                "fabric8.io/git-commit": "b2797b7b1ae166e19d1754d4fb56077ad3ee110d",
+                "fabric8.io/iconUrl": "img/icons/spring-boot.svg",
+                "fabric8.io/metrics-path": "dashboard/file/kubernetes-pods.json/?var-project=automation-api\u0026var-version=0.3.0"
+            }
+        },
+        "spec": {
+            "strategy": {
+                "type": "Rolling",
+                "rollingParams": {
+                    "updatePeriodSeconds": 1,
+                    "intervalSeconds": 1,
+                    "timeoutSeconds": 10800,
+                    "maxUnavailable": "25%",
+                    "maxSurge": "25%"
+                },
+                "resources": {}
+            },
+            "triggers": [
+                {
+                    "type": "ConfigChange"
+                },
+                {
+                    "type": "ImageChange",
+                    "imageChangeParams": {
+                        "automatic": true,
+                        "containerNames": [
+                            "spring-boot"
+                        ],
+                        "from": {
+                            "kind": "ImageStreamTag",
+                            "namespace": "sample-project",
+                            "name": "automation-api:0.3.0"
+                        },
+                        "lastTriggeredImage": "172.30.124.9:5000/sample-project/automation-api@sha256:975048abbebd8da451eb27be880311fb4ee5a2738ac4315c608f35d8d9145735"
+                    }
+                }
+            ],
+            "replicas": 1,
+            "test": false,
+            "selector": {
+                "group": "com.rhc",
+                "project": "automation-api",
+                "provider": "fabric8"
+            },
+            "template": {
+                "metadata": {
+                    "creationTimestamp": null,
+                    "labels": {
+                        "group": "com.rhc",
+                        "project": "automation-api",
+                        "provider": "fabric8",
+                        "version": "0.3.0"
+                    },
+                    "annotations": {
+                        "fabric8.io/git-branch": "pr4",
+                        "fabric8.io/git-commit": "b2797b7b1ae166e19d1754d4fb56077ad3ee110d",
+                        "fabric8.io/iconUrl": "img/icons/spring-boot.svg",
+                        "fabric8.io/metrics-path": "dashboard/file/kubernetes-pods.json/?var-project=automation-api\u0026var-version=0.3.0"
+                    }
+                },
+                "spec": {
+                    "containers": [
+                        {
+                            "name": "spring-boot",
+                            "image": "172.30.124.9:5000/sample-project/automation-api@sha256:975048abbebd8da451eb27be880311fb4ee5a2738ac4315c608f35d8d9145735",
+                            "ports": [
+                                {
+                                    "name": "http",
+                                    "containerPort": 8080,
+                                    "protocol": "TCP"
+                                },
+                                {
+                                    "name": "prometheus",
+                                    "containerPort": 9779,
+                                    "protocol": "TCP"
+                                },
+                                {
+                                    "name": "jolokia",
+                                    "containerPort": 8778,
+                                    "protocol": "TCP"
+                                }
+                            ],
+                            "env": [
+                                {
+                                    "name": "KUBERNETES_NAMESPACE",
+                                    "valueFrom": {
+                                        "fieldRef": {
+                                            "apiVersion": "v1",
+                                            "fieldPath": "metadata.namespace"
+                                        }
+                                    }
+                                },
+                                {
+                                    "name": "JAVA_APP_DIR",
+                                    "value": "/deployments"
+                                }
+                            ],
+                            "resources": {},
+                            "livenessProbe": {
+                                "httpGet": {
+                                    "path": "/health",
+                                    "port": 8080,
+                                    "scheme": "HTTP"
+                                },
+                                "initialDelaySeconds": 180,
+                                "timeoutSeconds": 1,
+                                "periodSeconds": 10,
+                                "successThreshold": 1,
+                                "failureThreshold": 3
+                            },
+                            "readinessProbe": {
+                                "httpGet": {
+                                    "path": "/health",
+                                    "port": 8080,
+                                    "scheme": "HTTP"
+                                },
+                                "initialDelaySeconds": 10,
+                                "timeoutSeconds": 1,
+                                "periodSeconds": 10,
+                                "successThreshold": 1,
+                                "failureThreshold": 3
+                            },
+                            "terminationMessagePath": "/dev/termination-log",
+                            "imagePullPolicy": "IfNotPresent",
+                            "securityContext": {
+                                "privileged": false
+                            }
+                        }
+                    ],
+                    "restartPolicy": "Always",
+                    "terminationGracePeriodSeconds": 30,
+                    "dnsPolicy": "ClusterFirst",
+                    "securityContext": {}
+                }
+            }
+        },
+        "status": {
+            "latestVersion": 4,
+            "observedGeneration": 5,
+            "replicas": 1,
+            "updatedReplicas": 1,
+            "availableReplicas": 1,
+            "details": {
+                "message": "caused by an image change",
+                "causes": [
+                    {
+                        "type": "ImageChange",
+                        "imageTrigger": {
+                            "from": {
+                                "kind": "ImageStreamTag",
+                                "namespace": "sample-project",
+                                "name": "automation-api:0.3.0"
+                            }
+                        }
+                    }
+                ]
+            }
+        }
+    }
+}
