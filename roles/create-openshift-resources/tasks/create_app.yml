@@ -155,7 +155,7 @@
   loop_control:
     loop_var: volume_associations
   command: >
-    {{ openshift.common.client_binary }} volume dc/{{ app.name }} --add \
+    {{ openshift.common.client_binary }} volume dc/{{ app.name }} --add --overwrite \
       --name={{ volume_associations.name }} \
       --claim-name={{ volume_associations.claim_type.name }} \
       --mount-path={{ volume_associations.mount_path }} \
