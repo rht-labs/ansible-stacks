@@ -1,0 +1,9 @@
+---
+- name: Set Default goup_role_binding Facts
+  set_fact:
+    group_role_binding: "{{ group_role_binding_item }}"
+
+- name: "Create Group Role Binding policy {{ item.name }} {{ group_role_binding.group.name }} -n {{ project.name }}"
+  command: >
+     {{ openshift.common.admin_binary }} policy add-role-to-group {{ item.name }} {{ group_role_binding.group.name }} -n {{ project.name }}
+  with_items: '{{ group_role_binding.roles }}'

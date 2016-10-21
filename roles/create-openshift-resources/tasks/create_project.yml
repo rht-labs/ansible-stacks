@@ -6,6 +6,7 @@
   set_fact:
     project_options: ''
     role_bindings_present: false
+    group_role_bindings_present: false
     apps_present: false
     project: "{{ project_item }}"
 
@@ -23,6 +24,11 @@
   set_fact:
     role_bindings_present: true
   when: project.user_to_role is defined and project.user_to_role != "" and project.user_to_role|length > 0
+
+- name: "Set Variable group_role_bindings_present Fact"
+  set_fact:
+    group_role_bindings_present: true
+  when: project.group_to_role is defined and project.group_to_role != "" and project.group_to_role|length > 0
 
 - name: "Set Variable persistent_volume_claims_present Fact"
   set_fact:
@@ -56,6 +62,16 @@
   loop_control:
     loop_var: role_binding_item
   when: role_bindings_present == true
+  static: no
+
+
+- debug: msg="group role binding pres {{ group_role_bindings_present }} {{ project}}"
+
+- include: create_group_role_binding.yml
+  with_items: '{{ project.group_to_role }}'
+  loop_control:
+    loop_var: group_role_binding_item
+  when: group_role_bindings_present == true
   static: no
 
 - include: create_persistent_volume_claims.yml
