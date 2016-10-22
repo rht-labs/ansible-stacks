@@ -64,9 +64,6 @@
   when: role_bindings_present == true
   static: no
 
-
-- debug: msg="group role binding pres {{ group_role_bindings_present }} {{ project}}"
-
 - include: create_group_role_binding.yml
   with_items: '{{ project.group_to_role }}'
   loop_control:

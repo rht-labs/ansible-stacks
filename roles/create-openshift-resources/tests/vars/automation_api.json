@@ -12,6 +12,7 @@
 							{
 								"name": "automation-api",
 								"scm_url": "https://github.com/rht-labs/automation-api.git",
+								"scm_ref": "master",
 								"build_tool": "mvn-3",
 								"build_application_commands": [
 									"mvn clean install"
@@ -24,11 +25,26 @@
 									"provider": "fabric8"
 								},
 								"environment_variables": {
-									"foo": "bar"
+									"POSTGRESQL_SVC": "postgresql.labs-api-dev.svc.cluster.local",
+									"POSTGRESQL_USER": "autoautoauto",
+									"POSTGRESQL_PASSWORD": "password",
+									"POSTGRESQL_DATABASE": "automation"
 								},
 								"routes": [
 									{
 										"route_type": "default"
+									}
+								]
+							}
+						],
+						"group_to_role": [
+							{
+								"group": {
+									"name": "system:serviceaccounts"
+								},
+								"roles": [
+									{
+										"name": "view"
 									}
 								]
 							}
