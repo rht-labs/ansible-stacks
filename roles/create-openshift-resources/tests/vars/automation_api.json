@@ -35,6 +35,15 @@
 										"route_type": "default"
 									}
 								]
+							},
+							{
+								"name": "automation-api-db",
+								"base_image": "openshift/postgresql",
+								"environment_variables": {
+									"POSTGRESQL_USER": "apidb",
+									"POSTGRESQL_PASSWORD": "apidb01",
+									"POSTGRESQL_DATABASE": "automation_api_dev"
+								}
 							}
 						],
 						"group_to_role": [
@@ -77,6 +86,28 @@
 												}
 											]
 										}
+									}
+								]
+							},
+							{
+								"name": "automation-api-db",
+								"base_image": "openshift/postgresql",
+								"environment_variables": {
+									"POSTGRESQL_USER": "apidb",
+									"POSTGRESQL_PASSWORD": "apidb01",
+									"POSTGRESQL_DATABASE": "automation_api_delivery"
+								},
+								"build_tool" : "none"
+							}
+						],
+						"group_to_role": [
+							{
+								"group": {
+									"name": "system:serviceaccounts"
+								},
+								"roles": [
+									{
+										"name": "view"
 									}
 								]
 							}
