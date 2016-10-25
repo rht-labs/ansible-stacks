@@ -16,7 +16,7 @@
 
 - name: "Set Imagestream Fact For Build Environment"
   set_fact:
-    imagestream_names: []
+    imagestreams_to_promote: []
     build_project_name: "{{ project.name }}"
   when: project.environment_type is defined and project.environment_type == 'build'
 
