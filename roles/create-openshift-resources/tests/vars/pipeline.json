@@ -16,7 +16,8 @@
 								"build_tool": "s2i",
 								"routes": [
 									{
-										"route_type": "default"
+										"route_type": "default",
+										"hostname": "pipeline.dev.rhel-cdk.10.1.2.2.xip.io"
 									}
 								]
 							}
@@ -30,9 +31,23 @@
 							{
 								"name": "jenkins",
 								"base_image": "jenkins",
+								"environment_variables": {
+									"JENKINS_OPTS": "'--httpPort=8081'"
+								},
 								"routes": [
 									{
-										"route_type": "default"
+										"route_type": "default",
+										"hostname": "pipeline.rhel-cdk.10.1.2.2.xip.io",
+										"port": "8081",
+										"service": {
+											"ports": [
+												{
+													"port": 8081,
+													"protocol": "TCP",
+													"target_port": 8081
+												}
+											]
+										}
 									}
 								]
 							}
