@@ -11,26 +11,38 @@
 # Long term, we should move this to oc patch which should solve avoid the race condition
 ##########################################
 
+# Right now this implementation only supports a single route.
+- name: Set Route Fact 
+  set_fact:
+    route: "{{ app.routes[0] }}"
+
+- name: "Set Facts for Update Ports"
+  set_fact:
+    update_to_service_required: true
+  when: route.service is defined
+
 - name: "Get Deployment Config: {{ app.name }}"
   command: >
     {{ openshift.common.client_binary }} get dc {{ app.name }} -n {{ project.name }} -o json
   register: dc_response
+  when: update_to_service_required is defined
   tags:
   - connected
 
 - name: Set Fact for DC object
   set_fact:
     dc: "{{ dc_response.stdout | from_json }}"
-
+  when: update_to_service_required is defined
 
 - name: Attempt to Apply New Port Specs to Deployment Config
   set_fact: 
     deployment_config:   "{{ dc | apply_ports_spec_config( app ) }}"
+  when: update_to_service_required is defined
 
 - name: Set Fact for Required Deployment Config Updates
   set_fact: 
     update_to_dc_required: true
-  when: deployment_config != dc
+  when: update_to_service_required is defined and deployment_config != dc
 
 - name: "Use a unique temporary file to store the Deployment Config object"
   command: mktemp
@@ -81,12 +93,6 @@
   tags:
   - connected
 
-# Right now this implementation only supports a single route.
-
-- name: Set Route Fact 
-  set_fact:
-    route: "{{ app.routes[0] }}"
-
 - name: "Determine If {{ app.name }} Route Exists"
   command: >
      {{ openshift.common.client_binary }} get route {{ app.name }} -n {{ project.name }} -o json
@@ -96,14 +102,14 @@
 
 - name: "Expose App with default route: {{ app.name }}"
   command: >
-    {{ openshift.common.client_binary }} expose service {{ app.name }} -n {{ project.name }}
+    {{ openshift.common.client_binary }} expose service {{ route | create_unsecured_route_options( app.name ) }} -n {{ project.name }}
   when: app_name_exists.rc == 1 and route.route_type is defined and route.route_type == 'default'
   tags:
   - connected
 
 - name: "Expose App with secured route: {{ app.name }}"
   command: >
-    {{ openshift.common.client_binary }} create route {{ route | to_create_route_options( app.name ) }} -n {{ project.name }}
+    {{ openshift.common.client_binary }} create route {{ route | create_secured_route_options( app.name ) }} -n {{ project.name }}
   when: app_name_exists.rc == 1 and route.route_type is defined and route.route_type in ['edge','reencrypt','passthrough']
   tags:
   - connected
