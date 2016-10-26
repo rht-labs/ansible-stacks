@@ -3,6 +3,8 @@
   set_fact:
     projects_present: false
     openshift_resources: "{{ openshift_cluster.openshift_resources }}" # http://docs.ansible.com/ansible/playbooks_loops.html#loops-and-includes-in-2-0
+    service_account_tokens: {}  # app.name => api token for service account
+    fully_qualified_service_account_names: {}  # app.name => fully_qualified_service_account_name
 
 - name: "Set Variable projects_present Fact"
   set_fact:

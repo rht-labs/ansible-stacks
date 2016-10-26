@@ -9,6 +9,11 @@
   command: >
     {{ openshift.common.client_binary }} policy add-role-to-group system:image-puller system:serviceaccounts:{{ project_name }} -n {{ build_project_name }}
 
+# Consider providing more fine grain permissions using https://docs.openshift.org/latest/admin_guide/securing_builds.html
+- name: "Add Edit Role to Service Account"    
+  command: >
+    {{ openshift.common.client_binary }} policy add-role-to-user edit {{ fully_qualified_service_account_names[ app.name ] }} -n {{ project_name }}
+
 - name: "Create Image Stream in {{ project_name }} from Image Stream in {{ last_used_project_name }}"
   command: >
     {{ openshift.common.client_binary }} tag {{ last_used_image_name }} {{ promotion_image_name }}

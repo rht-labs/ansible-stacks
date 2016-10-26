@@ -1,0 +1,48 @@
+---
+
+- name: "Add App To Imagestream To Promote"
+  set_fact:
+    imagestreams_to_promote: "{{ [ app.name ] | union( imagestreams_to_promote ) }}" # simplest way I could find to append to a list. alternatives welcome
+    service_account_name: "{{ app.name }}-sa"
+
+- name: "Check if Service Account {{ service_account_name }} Exists"
+  command: >
+    {{ openshift.common.client_binary }} get sa {{ service_account_name }} -n {{ project.name }}
+  register: sa_get_output
+  failed_when: false
+
+- name: "Create Service Account {{ service_account_name }}"
+  command: >
+    {{ openshift.common.client_binary }} create sa {{ service_account_name }} -n {{ project.name }}
+  when: sa_get_output.rc == 1 
+
+# Consider providing more fine grain permissions using https://docs.openshift.org/latest/admin_guide/securing_builds.html
+- name: "Add Edit Role to Service Account"    
+  command: >
+    {{ openshift.common.client_binary }} policy add-role-to-user edit -z {{ service_account_name }} -n {{ build_project_name }}
+
+- name: "Get Service Account Tokens"
+  command: >
+    {{ openshift.common.client_binary }} describe sa {{ service_account_name }} -n {{ project.name }}
+  register: sa_describe_command_output
+
+- name: "Get Service Account Token Secret"
+  command: >
+    {{ openshift.common.client_binary }} describe secret {{ sa_describe_command_output.stdout | get_sa_token_name }} -n {{ project.name }}
+  register: sa_token_secret_command_output
+
+- name: "Set Service Account Token Secret Fact"
+  set_fact:
+    service_account_token_secret: "{{ sa_token_secret_command_output.stdout | get_sa_token_secret }}"
+    fully_qualified_service_account_name: "system:serviceaccount:{{ project.name }}:{{ service_account_name }}"
+
+- name: "Create Dictionary Entries"
+  set_fact:
+    service_account_token_secret_entry: "{ '{{ app.name }}' : '{{ service_account_token_secret }}' }"
+    fully_qualified_service_account_name_entry: "{ '{{ app.name }}' : '{{ fully_qualified_service_account_name }}' }"
+
+
+- name: "Save Service Account Token Secret"
+  set_fact:
+    service_account_tokens: "{{ service_account_tokens | combine( service_account_token_secret_entry ) }}"
+    fully_qualified_service_account_names: "{{ fully_qualified_service_account_names | combine( fully_qualified_service_account_name_entry ) }}"
