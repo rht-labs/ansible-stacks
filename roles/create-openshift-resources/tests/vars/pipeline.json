@@ -12,6 +12,7 @@
 							{
 								"name": "jenkins",
 								"scm_url": "https://github.com/rht-labs/openshift-jenkins-s2i-config.git",
+								"scm_ref": "cdk-helper",
 								"base_image": "openshift/jenkins",
 								"build_tool": "s2i",
 								"routes": [

@@ -14,6 +14,11 @@ Most of the tests are written against the [Red Hat Container Development Kit](ht
 
 At this point, the configuration in the [test inventory file](tests/inventory) and the tests prefixed with `cdk` should be to run the tests. If not, please open an issue and let us know.
 
+### Filter Plugin Tests
+Tests prefixed with `filter_test` are primarily designed as unit tests for behavior provided by custom filter plugins for this role, and specifically how the filter plugin helps drive a subset of tasks. In order to run these tests locally, you must link the custom filter plugin as if they are standalone plugins. See [the docs](http://docs.ansible.com/ansible/dev_guide/developing_plugins.html#distributing-plugins) for how to do that. When using the plugins as part of the role, they will be distributed and linked via the role without extra configurations. These tests by design test the filter using only a subset of the tasks in the role, thus the need for extra config.
+
+These tests also target the CDK, and should be run when logged in as `admin`.
+
 ### OpenShift Environment
 For test that aren't a good fit for a CDK run, i.e.: need external / 3rd party resources, a real OpenShift environment can be used. As many of the roles part of the `ansible-stacks` implementations touches on cluster administration related areas, it's required that the user used is part of the `cluster-admins` role. For example, to run as the user **lisa** with password **mypassword!**, the following steps would be required:
 
