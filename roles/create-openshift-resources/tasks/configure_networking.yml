@@ -15,6 +15,8 @@
 - name: Set Route Fact 
   set_fact:
     route: "{{ app.routes[0] }}"
+    update_to_service_required: false
+    update_to_dc_required: false
 
 - name: "Set Facts for Update Ports"
   set_fact:
@@ -25,42 +27,42 @@
   command: >
     {{ openshift.common.client_binary }} get dc {{ app.name }} -n {{ project.name }} -o json
   register: dc_response
-  when: update_to_service_required is defined
+  when: update_to_service_required is defined and update_to_service_required == true
   tags:
   - connected
 
 - name: Set Fact for DC object
   set_fact:
     dc: "{{ dc_response.stdout | from_json }}"
-  when: update_to_service_required is defined
+  when: update_to_service_required is defined and update_to_service_required == true
 
 - name: Attempt to Apply New Port Specs to Deployment Config
   set_fact: 
     deployment_config:   "{{ dc | apply_ports_spec_config( app ) }}"
-  when: update_to_service_required is defined
+  when: update_to_service_required is defined and update_to_service_required == true
 
 - name: Set Fact for Required Deployment Config Updates
   set_fact: 
     update_to_dc_required: true
-  when: update_to_service_required is defined and deployment_config != dc
+  when: update_to_service_required is defined and update_to_service_required == true and deployment_config != dc
 
 - name: "Use a unique temporary file to store the Deployment Config object"
   command: mktemp
   register: tempfile
-  when: update_to_dc_required is defined
+  when: update_to_dc_required is defined and update_to_dc_required == true
 
 - name: "Prepare the object definition for the Deployment Config"
   copy:
     content:  "{{ deployment_config }}"
     dest: "{{ tempfile.stdout }}"
-  when: update_to_dc_required is defined    
+  when: update_to_dc_required is defined and update_to_dc_required == true    
 
 - block:
    
   - name: "Apply New Deployment Config"
     command: >
       {{ openshift.common.client_binary }} replace dc {{ app.name }} -f {{ tempfile.stdout }} -n {{ project.name }}
-    when: update_to_dc_required is defined
+    when: update_to_dc_required is defined and update_to_dc_required == true
     tags:
     - connected
   
@@ -77,19 +79,19 @@
   file: 
     path: "{{ tempfile.stdout }}"
     state: absent
-  when: update_to_dc_required is defined
+  when: update_to_dc_required is defined and update_to_dc_required == true
 
 - name: "Delete Service: {{ app.name }}"
   command: >
     {{ openshift.common.client_binary }} delete service {{ app.name }} -n {{ project.name }}
-  when: update_to_dc_required is defined
+  when: update_to_dc_required is defined and update_to_dc_required == true
   tags:
   - connected
 
 - name: "Create new Service with updated Deployment Config: {{ app.name }}"
   command: >
     {{ openshift.common.client_binary }} expose dc {{ app.name }} -n {{ project.name }}
-  when: update_to_dc_required is defined
+  when: update_to_dc_required is defined and update_to_dc_required == true
   tags:
   - connected
 

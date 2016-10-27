@@ -17,10 +17,6 @@
 								"build_application_commands": [
 									"mvn clean install"
 								],
-								"build_image_commands": [
-									"oc login 10.1.2.2:8443 --token=$OPENSHIFT_API_TOKEN --insecure-skip-tls-verify",
-									"oc start-build automation-api --from-dir=. --follow -n labs-api-dev"
-								],
 								"labels": {
 									"provider": "fabric8"
 								},
@@ -32,7 +28,23 @@
 								},
 								"routes": [
 									{
-										"route_type": "default"
+										"route_type": "default",
+										"hostname": "pipeline.cdk.10.1.2.2.xip.io",
+										"port": "8080",
+										"service": {
+											"ports": [
+												{
+													"port": 8080,
+													"protocol": "TCP",
+													"target_port": 8080
+												},
+												{
+													"port": 5000,
+													"protocol": "TCP",
+													"target_port": 5000
+												}
+											]
+										}
 									}
 								]
 							},
@@ -69,23 +81,7 @@
 								"base_image": "automation-api",
 								"routes": [
 									{
-										"route_type": "passthrough",
-										"hostname": "custom-domain.dev.com",
-										"port": "8080",
-										"service": {
-											"ports": [
-												{
-													"port": 8080,
-													"protocol": "TCP",
-													"target_port": 8080
-												},
-												{
-													"port": 5000,
-													"protocol": "TCP",
-													"target_port": 5000
-												}
-											]
-										}
+										"route_type": "default"
 									}
 								]
 							},
@@ -97,7 +93,7 @@
 									"POSTGRESQL_PASSWORD": "apidb01",
 									"POSTGRESQL_DATABASE": "automation_api_delivery"
 								},
-								"build_tool" : "none"
+								"build_tool": "none"
 							}
 						],
 						"group_to_role": [
