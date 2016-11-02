@@ -9,10 +9,24 @@ An ansible role that consumes the model defined in the [Open Innovation Labs Aut
 Most of the tests are written against the [Red Hat Container Development Kit](http://developers.redhat.com/products/cdk/overview/) in order to increase portability. You'll need to make sure that ansible can ssh in to the vagrant image that serves the CDK. The simplest way to do this is to add the private key that vagrant generates to your local ssh agent. The below command is an example of how to do this is you are using libvirt as vagrant provider:
 
 ```
-  >> ssh-add <your_vagrant_dir>/.vagrant/machines/default/libvirt/private_key
+  $ ssh-add <your_vagrant_dir>/.vagrant/machines/default/libvirt/private_key
 ```
 
+And if using virtualbox:
+
+```
+  $ ssh-add <your_vagrant_dir>/.vagrant/machines/default/virtualbox/private_key 
+```
+
+
 At this point, the configuration in the [test inventory file](tests/inventory) and the tests prefixed with `cdk` should be to run the tests. If not, please open an issue and let us know.
+
+To run the tests, using this command:
+
+```
+  $ ansible-playbook -i inventory <cdk_test>.yml
+```
+
 
 ### Filter Plugin Tests
 Tests prefixed with `filter_test` are primarily designed as unit tests for behavior provided by custom filter plugins for this role, and specifically how the filter plugin helps drive a subset of tasks. In order to run these tests locally, you must link the custom filter plugin as if they are standalone plugins. See [the docs](http://docs.ansible.com/ansible/dev_guide/developing_plugins.html#distributing-plugins) for how to do that. When using the plugins as part of the role, they will be distributed and linked via the role without extra configurations. These tests by design test the filter using only a subset of the tasks in the role, thus the need for extra config.
