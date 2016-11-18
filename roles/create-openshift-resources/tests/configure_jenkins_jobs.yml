@@ -1,0 +1,36 @@
+---
+# This test covers the full feature set provided by the role
+
+- name: "Create test resources"
+  hosts: localhost
+
+# given 
+  vars:
+    pipeline_server_url: http://pipeline.dev.rhel-cdk.10.1.2.2.xip.io
+    pipeline_server_user: admin
+    pipeline_server_password: password
+    api_document_url: https://raw.githubusercontent.com/rht-labs/ansible-stacks/master/roles/create-openshift-resources/tests/vars/pipeline.json
+    service_account_tokens: {}
+  # vars_files:
+  # - vars/automation_api.json
+
+  # pre_tasks:
+  # - name: "Set Route Fact"
+  #   set_fact:
+  #     app: "{{ openshift_clusters[0].openshift_resources.projects[0].apps[0] }}"
+
+  # roles:
+  # - openshift-defaults
+
+  post_tasks:
+# when  
+  - include: ../tasks/configure_jenkins_jobs.yml
+
+# then
+  # - name: "check if Service Account {{ service_account_name }} Exists"
+  #   command: >
+  #     {{ openshift.common.client_binary }} get sa {{ service_account_name }} -n {{ project.name }}
+  #   register: does_sa_exist  
+
+  # - assert:
+  #     that:

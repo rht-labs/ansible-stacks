@@ -10,6 +10,9 @@
   vars:
     openshift_password: admin
     openshift_user: admin
+    pipeline_server_user: admin
+    pipeline_server_password: password
+    api_document_url: "https://raw.githubusercontent.com/rht-labs/ansible-stacks/master/roles/create-openshift-resources/tests/vars/pipeline.json"
 
   roles:
     - openshift-defaults
