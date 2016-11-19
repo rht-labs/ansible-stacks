@@ -1,4 +1,5 @@
 {
+	"pipeline_server_url" : "http://pipeline.rhel-cdk.10.1.2.2.xip.io",
 	"openshift_clusters": [
 		{
 			"openshift_host_env": "10.1.2.2:8443",

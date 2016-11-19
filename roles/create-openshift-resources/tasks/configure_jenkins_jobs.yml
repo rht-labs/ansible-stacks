@@ -1,0 +1,26 @@
+---
+- name: "Ensure the Pipeline Server is Up"
+  uri:
+    url: "{{ pipeline_server_url }}"
+    method: GET
+    status_code: 200 
+    user: "{{ pipeline_server_user }}"
+    password: "{{ pipeline_server_password }}"
+    force_basic_auth: yes
+  when: pipeline_server_url is defined and pipeline_server_url != ""
+  register: pipeline_server_check_result 
+  until: pipeline_server_check_result | success
+  retries: 24
+  delay: 5
+
+- name: "Generate Jobs Via Jenkins Seed Job"
+  uri:
+    url: "{{ pipeline_server_url }}/job/release-pipeline-seed-job-script/buildWithParameters?application_name={{ item }}&config_url={{ api_document_url }}&openshift_api_token={{ service_account_tokens[item] | replace(' ','') }}"
+    method: POST
+    status_code: 201
+    user: "{{ pipeline_server_user }}"
+    password: "{{ pipeline_server_password }}"
+    force_basic_auth: yes
+  when: service_account_tokens is defined and service_account_tokens | length > 0
+  with_items:
+  - "{{ service_account_tokens.keys() }}"
