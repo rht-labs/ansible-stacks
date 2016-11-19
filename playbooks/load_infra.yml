@@ -1,0 +1,22 @@
+---
+- name: "Fetch the API document"
+  hosts: localhost
+  tasks:
+  - name: Fetch the latest
+    uri:
+      url: "{{ api_document_url }}"
+      method: GET
+      HEADER_Content-Type: "application/json"
+      return_content: yes
+    register: env_config
+  - set_fact:
+      env_data: "{{ env_config.content | from_json }}"
+
+- name: "Configure the OpenShift Clusters infrastructure"
+  hosts: localhost
+  pre_tasks:
+  - set_fact:
+      openshift_clusters: "{{ env_data.openshift_clusters }}"
+  roles:
+  - role: openshift-defaults
+  - role: create-openshift-resources
