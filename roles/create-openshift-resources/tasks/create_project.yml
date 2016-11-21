@@ -5,9 +5,10 @@
 - name: "Set Basic Project Facts"
   set_fact:
     project_options: ''
-    role_bindings_present: false
-    group_role_bindings_present: false
-    apps_present: false
+    role_bindings_def: ''
+    group_role_bindings_def: ''
+    persistent_volume_claims_def: ''
+    apps_def: ''
     project: "{{ project_item }}"
 
 - name: Fail for Missing Project Name
@@ -20,24 +21,24 @@
     build_project_name: "{{ project.name }}"
   when: project.environment_type is defined and project.environment_type == 'build'
 
-- name: "Set Variable role_bindings_present Fact"
+- name: "Set Variable role_bindings_def Fact"
   set_fact:
-    role_bindings_present: true
+    role_bindings_def: "{{ project.user_to_role }}"
   when: project.user_to_role is defined and project.user_to_role != "" and project.user_to_role|length > 0
 
-- name: "Set Variable group_role_bindings_present Fact"
+- name: "Set Variable group_role_bindings_def Fact"
   set_fact:
-    group_role_bindings_present: true
+    group_role_bindings_def: "{{ project.group_to_role }}"
   when: project.group_to_role is defined and project.group_to_role != "" and project.group_to_role|length > 0
 
-- name: "Set Variable persistent_volume_claims_present Fact"
+- name: "Set Variable persistent_volume_claims_def Fact"
   set_fact:
-    persistent_volume_claims_present: true
+    persistent_volume_claims_def: "{{ project.persistent_volume_claims }}"
   when: project.persistent_volume_claims is defined and project.persistent_volume_claims != "" and project.persistent_volume_claims|length > 0
 
-- name: "Set Variable apps_present Fact"
+- name: "Set Variable apps_def Fact"
   set_fact:
-    apps_present: true
+    apps_def: "{{ project.apps }}"
   when: project.apps is defined and project.apps != "" and project.apps|length > 0
 
 - name: "Add display-name Option"
@@ -58,31 +59,31 @@
     {{ openshift.common.client_binary }} new-project {{ project.name }} {{ project_options }}
 
 - include: create_role_binding.yml
-  with_items: '{{ project.user_to_role }}'
+  with_items: '{{ role_bindings_def }}'
   loop_control:
     loop_var: role_binding_item
-  when: role_bindings_present == true
+  when: role_bindings_def != ''
   static: no
 
 - include: create_group_role_binding.yml
-  with_items: '{{ project.group_to_role }}'
+  with_items: '{{ group_role_bindings_def }}'
   loop_control:
     loop_var: group_role_binding_item
-  when: group_role_bindings_present == true
+  when: group_role_bindings_def != ''
   static: no
 
 - include: create_persistent_volume_claims.yml
-  with_items: '{{ project.persistent_volume_claims }}'
+  with_items: '{{ persistent_volume_claims_def }}'
   loop_control:
     loop_var: persistent_volume_claims_item
-  when: persistent_volume_claims_present == true
+  when: persistent_volume_claims_def != ''
   static: no
 
 - include: create_app.yml
-  with_items: '{{ project.apps }}'
+  with_items: '{{ apps_def }}'
   loop_control:
     loop_var: app_item
-  when: apps_present == true
+  when: apps_def != ''
   static: no
 
 ## In order to increase performance when more than one app is present in a build env, this check was moved here after create_app.yml so that builds and image pushes can execute in parallel.
@@ -93,12 +94,16 @@
   command: >
      {{ openshift.common.client_binary }} get istag {{ app_item_2.name }}:latest -n {{ project.name }} -o json
   register: get_build_imagestream_result
-  when: build_project_name == project.name and app_item_2.scm_url is defined and app_item_2.scm_url != ''
+  when:
+  - apps_def != ''
+  - build_project_name == project.name
+  - app_item_2.scm_url is defined
+  - app_item_2.scm_url != ''
   changed_when: false
   until: get_build_imagestream_result.rc == 0
   retries: 60
   delay: 5  # this is 5 min
-  with_items: '{{ project.apps }}'
+  with_items: '{{ apps_def }}'
   loop_control:
     loop_var: app_item_2
 

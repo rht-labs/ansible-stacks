@@ -24,8 +24,8 @@
     labels: ''
     environment_variables: ''
     environment_variables_string: ''
+    pvc_associations_def: ''
     fabric8_java_s2i_present: false
-    pvc_associations: false
     routes_present: false
     new_pipeline_required: false
 
@@ -106,7 +106,7 @@
 
 - name: "Set Fact for Persistent Volume Claim Associations"
   set_fact:
-    pvc_associations: true
+    pvc_associations_def: "{{ app.pvc_associations }}"
   when: app.pvc_associations is defined and app.pvc_associations != ''
 
 - name: "Set Fact for Custom Route Present"
@@ -161,7 +161,7 @@
   when: fabric8_java_s2i_present is defined and fabric8_java_s2i_present == true
 
 - name: "Add Volume to {{ app.name }}"
-  with_items: '{{ app.pvc_associations }}'
+  with_items: '{{ pvc_associations_def }}'
   loop_control:
     loop_var: volume_associations
   command: >
@@ -170,4 +170,8 @@
       --claim-name={{ volume_associations.claim_type.name }} \
       --mount-path={{ volume_associations.mount_path }} \
       -n {{ project.name }}
-  when: pvc_associations == true and get_app_name_result.rc != 0 and create_app_result.rc == 0
+  when: 
+  - pvc_associations_def != ''
+  - get_app_name_result.rc != 0
+  - create_app_result.rc == 0
+
