@@ -1,0 +1,24 @@
+---
+# This test covers the full feature set provided by the role
+
+- name: "Create test resources"
+  hosts: cdk
+
+  vars_files:
+    - vars/nexus.json
+
+  vars:
+    openshift_password: admin
+    openshift_user: admin
+
+  roles:
+    - openshift-defaults
+    - create-openshift-resources
+
+# cleanup
+  post_tasks:
+  - name: "Remove project {{ item.name }}"
+    command: >
+      {{ openshift.common.client_binary }} delete project {{ item.name  }}
+    when: '"{{ item.name }}" != "ci" and cleanup is defined and cleanup'
+    with_items: '{{ openshift_resources.projects }}'
