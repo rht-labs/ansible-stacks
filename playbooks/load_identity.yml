@@ -1,0 +1,22 @@
+---
+- name: "Fetch the API document"
+  hosts: localhost
+  tasks:
+  - name: Fetch the latest
+    uri:
+      url: "{{ api_document_url }}"
+      method: GET
+      HEADER_Content-Type: "application/json"
+      return_content: yes
+    register: env_config
+  - set_fact:
+      env_data: "{{ env_config.content | from_json }}"
+
+- name: "Create Identity Manager Users and Groups"
+  hosts: localhost
+  pre_tasks:
+  - set_fact:
+      users: "{{ env_data.users }}"
+      user_groups: "{{ env_data.user_groups }}"
+  roles:
+  - role: create-identities
