@@ -25,3 +25,12 @@ Example run:
 **Notes**
  1. The user needs to have idm rights to add/remove/modify users and groups
 
+
+## configure_nexus.yml
+This playbook will configure each nexus declared in the inventory group `[nexus]` with a set of artifact repositories. Each host in the inventory group must declare the variable `nexus_url` which should be the base url of the nexus app (i.e. where the homepage is found). An example inventory is [here](../roles/configure-nexus/tests/inventory). There a few switches in the role, which can be found in [here](../roles/configure-nexus/defaults/main.yml).
+
+Example run:
+
+```
+>> ansible-playbook playbooks/configure_nexus.yml -i <your_inventory>
+```

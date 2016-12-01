@@ -1,0 +1,51 @@
+{
+	"openshift_clusters": [
+		{
+			"openshift_host_env": "10.1.2.2:8443",
+			"openshift_resources": {
+				"projects": [
+					{
+						"name": "artifact-repo",
+						"display_name": "artifact-repo - Dev",
+						"environment_type": "build",
+						"apps": [
+							{
+								"name": "nexus",
+								"scm_url": "sonatype/nexus3",
+								"routes": [
+									{
+										"route_type": "default"
+									}
+								],
+								"pvc_associations": [
+									{
+										"name": "nexus-volume-1",
+										"mount_path": "/nexus-data",
+										"claim_type": {
+											"kind": "claim",
+											"name": "nexus-pvc"
+										}
+									}
+								]
+							}
+						],
+						"persistent_volume_claims": [
+							{
+								"name": "nexus-pvc",
+								"access_modes": [
+									"ReadWriteMany"
+								],
+								"storage": 3,
+								"selector": {
+									"match_labels": {
+										"name": "nexus"
+									}
+								}
+							}
+						]
+					}
+				]
+			}
+		}
+	]
+}
