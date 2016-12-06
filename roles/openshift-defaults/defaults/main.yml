@@ -2,7 +2,7 @@
 openshift:
   common:
     client_binary: "oc"
-    admin_binary: "oadm"
+    admin_binary: "oc adm"
 docker:
   common:
     client_binary: "docker"
