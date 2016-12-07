@@ -4,9 +4,9 @@
   set_fact:
     app: "{{ app_item }}"
 
-- name: Fail for Missing scm_url and base image
-  fail: msg="This role requires app.scm_url or app.base_image to be set and non empty"
-  when: app.scm_url is not defined and app.base_image is not defined
+- name: Fail for Missing scm_url,  base image, or template
+  fail: msg="This role requires app.scm_url, app.base_image, or app.from_template to be set and non empty"
+  when: app.scm_url is not defined and app.base_image is not defined and app.from_template is not defined
 
 - name: Fail for Missing app name
   fail: msg="This role requires app.name to be set and non empty"
@@ -64,7 +64,10 @@
     app_options: "{{ app_options }} --name={{ app.name }}"
   when: app.name is defined and app.name != ''
 
-
+- name: "Add template option"
+  set_fact:
+    app_options: "{{ app_options }} --template={{ app.from_template }}"
+  when: app.from_template is defined and app.from_template != ''
 
 - name: "Set Variable Labels Fact"
   set_fact:
