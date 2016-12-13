@@ -37,7 +37,7 @@
 - name: "Set oc new-app friendly SCM with only SCM URL"
   set_fact:
     app_scm: "{{ app.scm_url }}"
-  when: app.scm_url is defined and app.scm_url != '' and  app_scm == '' 
+  when: app.scm_url is defined and app.scm_url != '' and  app_scm == ''
 
 - name: "Set App Source with SCM Url and Base Image"
   set_fact:
@@ -117,17 +117,24 @@
     routes_present: true
   when: app.routes is defined and app.routes | length > 0
 
-- name: "Determine if {{ app.name }} App Exists"
+- name: "Determine if {{ app.name }} App Exists by app name"
   command: >
      {{ openshift.common.client_binary }} get dc {{ app.name }} -n {{ project.name }} -o json
   register: get_app_name_result
   failed_when: false
   changed_when: false
 
+- name: "Determine if {{ app.name }} App Exists by app label"
+  command: >
+     {{ openshift.common.client_binary }} get dc,bc -l 'app={{ app.name }}' -n {{ project.name }} -o json
+  register: get_app_label_result
+  failed_when: false
+  changed_when: false
+
 - name: "Set Fact For New Pipeline Required"
   set_fact:
     new_pipeline_required: true
-  when: project.environment_type is defined and project.environment_type == 'build' and app.build_tool is defined and app.build_tool != 'none'  
+  when: project.environment_type is defined and project.environment_type == 'build' and app.build_tool is defined and app.build_tool != 'none'
 
 - include: create_preqs_for_pipeline.yml
   when: new_pipeline_required is defined and new_pipeline_required == true
@@ -154,7 +161,7 @@
 - name: "Create App: {{ app.name }}"
   command: >
     {{ openshift.common.client_binary }} new-app {{ app_source }} -n {{ project.name }} {{ app_options }}
-  when: get_app_name_result.rc == 1
+  when: get_app_name_result.rc == 1 and get_app_label_result.rc == 1
   register: create_app_result
 
 - include: configure_networking.yml
@@ -173,8 +180,7 @@
       --claim-name={{ volume_associations.claim_type.name }} \
       --mount-path={{ volume_associations.mount_path }} \
       -n {{ project.name }}
-  when: 
+  when:
   - pvc_associations_def != ''
   - get_app_name_result.rc != 0
   - create_app_result.rc == 0
-
