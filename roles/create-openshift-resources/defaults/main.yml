@@ -1,0 +1,5 @@
+---
+image_build_retries: 60
+image_build_delay: 5
+jenkins_server_poll_retries: 24
+jenkins_server_poll_delay: 5

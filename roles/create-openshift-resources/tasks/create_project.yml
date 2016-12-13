@@ -101,8 +101,8 @@
   - app_item_2.scm_url != ''
   changed_when: false
   until: get_build_imagestream_result.rc == 0
-  retries: 60
-  delay: 5  # this is 5 min
+  retries: '{{ image_build_retries }}'
+  delay: '{{ image_build_delay }}'
   with_items: '{{ apps_def }}'
   loop_control:
     loop_var: app_item_2
