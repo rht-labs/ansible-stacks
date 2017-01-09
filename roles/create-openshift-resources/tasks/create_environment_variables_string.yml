@@ -4,4 +4,10 @@
   set_fact:
     environment_variables_string: "{{ environment_variables_string }} -e '\"{{ item }}={{ environment_variables[item] }}\"' "
   with_items: '{{ environment_variables.keys() }}'
+  when: app.from_template is not defined and app.from_template == ''
 
+- name: "Add variable to environment_variables_string"
+  set_fact:
+    environment_variables_string: "{{ environment_variables_string }} -p '\"{{ item }}={{ environment_variables[item] }}\"' "
+  with_items: '{{ environment_variables.keys() }}'
+  when: app.from_template is defined and app.from_template != ''
