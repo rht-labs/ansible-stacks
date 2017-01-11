@@ -10,8 +10,8 @@
   when: pipeline_server_url is defined and pipeline_server_url != ""
   register: pipeline_server_check_result 
   until: pipeline_server_check_result | success
-  retries: 24
-  delay: 5
+  retries: '{{ jenkins_server_poll_retries }}'
+  delay: '{{ jenkins_server_poll_delay }}'
 
 - name: "Generate Jobs Via Jenkins Seed Job"
   uri:
