@@ -1,0 +1,45 @@
+---
+# This test covers the full feature set provided by the role
+
+- name: "Create test resources"
+  hosts: cdk
+
+  vars_files:
+    - vars/openshift_resources.json
+
+  pre_tasks:
+  - name: "Log In Manually"
+    command: >
+      oc login 10.1.2.2:8443 -u admin -p admin
+  - name: "Create Service account"
+    command: >
+      oc create serviceaccount stacks -n default
+  - name: "Give rights to sa"
+    command: >
+      oc adm policy add-cluster-role-to-user admin system:serviceaccount:default:stacks
+  - name: "Get sa tokens"
+    command: >
+      oc serviceaccounts get-token stacks -n default
+    register: sa_token
+#  - name: "Set token fact"
+#    set_fact:
+#      openshift_token: "{{ sa_token.stdout }}"
+  - name: "Log out to prove token works"
+    command: >
+      oc logout
+
+  vars:
+    oc_login: false
+    openshift_token: "{{ sa_token.stdout }}"
+
+  roles:
+    - openshift-defaults
+    - create-openshift-resources
+
+# cleanup
+  post_tasks:
+  - name: "Remove project {{ item.name }}"
+    command: >
+      {{ openshift.common.client_binary }} delete project {{ item.name  }}
+    when: '"{{ item.name }}" != "ci" and cleanup is defined and cleanup'
+    with_items: '{{ openshift_resources.projects }}'

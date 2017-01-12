@@ -35,19 +35,24 @@
     openshift_token: ''
   when: openshift_token is not defined
 
+- name: "Default oc_login to true when not set"
+  set_fact:
+    oc_login: 'true'
+  when: oc_login is not defined
+
 - name: "Check whether we will authenticate with username & password"
   set_fact:
     auth_user_pass: true
-  when: openshift_user != '' and openshift_password != ''
+  when: openshift_user != '' and openshift_password != '' and oc_login == 'true'
 
 - name: "Check whether we will authenticate with a token"
   set_fact:
     auth_token: true
-  when: openshift_token != ''
+  when: openshift_token != '' and oc_login == true
 
 - name: Fail for Missing Authentication method
   fail: msg="This role requires either openshift_token or openshift_user and openshift_password to be set"
-  when: auth_token != true and auth_user_pass != true
+  when: auth_token != true and auth_user_pass != true and oc_login == true
 
 - name: "Fail for Missing OpenShift Host Env"
   fail: msg="This role requires openshift_cluster.openshift_host_env to be set and non empty"
@@ -58,7 +63,7 @@
     {{ openshift.common.client_binary }} login {{ openshift_cluster.openshift_host_env }}
     --insecure-skip-tls-verify=true --username={{ openshift_user }} --password={{ openshift_password }}
   changed_when: False
-  when: openshift_resources_present == true and auth_user_pass == true and auth_token != true
+  when: openshift_resources_present == true and auth_user_pass == true and auth_token != true and oc_login == true
 
 - name: "Add token to all openshift client comands when token is set"
   set_fact:
