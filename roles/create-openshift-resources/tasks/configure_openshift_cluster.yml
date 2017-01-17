@@ -10,10 +10,6 @@
     auth_token: 'no'
     auth_user_pass: 'no'
 
-- debug:
-    msg: "{{ oc_login }} - {{ auth_token }} - {{ openshift.common.client_binary }}"
-    verbosity: 2
-
 - name: "Set Variable openshift_persistent_volumes_def Fact"
   set_fact:
     openshift_persistent_volumes_def: "{{ openshift_cluster.persistent_volumes }}"
@@ -71,10 +67,6 @@
     --insecure-skip-tls-verify=true --username={{ openshift_user }} --password={{ openshift_password }}
   changed_when: False
   when: openshift_resources_present == true and auth_user_pass == true and auth_token != true and oc_login == 'yes'
-
-- debug:
-    msg: "{{ oc_login }} - {{ auth_token }} - {{ openshift.common.client_binary }}"
-    verbosity: 2
 
 - name: "Add token to all openshift client comands when token is set"
   set_fact:
