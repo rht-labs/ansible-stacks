@@ -21,15 +21,15 @@
     command: >
       oc serviceaccounts get-token stacks -n default
     register: sa_token
-#  - name: "Set token fact"
-#    set_fact:
-#      openshift_token: "{{ sa_token.stdout }}"
+  - name: "Set token fact"
+    set_fact:
+      openshift_token: "{{ sa_token.stdout }}"
   - name: "Log out to prove token works"
     command: >
       oc logout
 
   vars:
-    oc_login: false
+    oc_login: 'yes'
     openshift_token: "{{ sa_token.stdout }}"
 
   roles:
