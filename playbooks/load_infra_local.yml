@@ -1,0 +1,13 @@
+---
+- name: "Load up the infrastructure from a local file..."
+  hosts: localhost
+  vars:
+  - api_document_file: "infra_env.json" # Default value... Use -e to override
+  #  - openshift_user: user # Default value ... Use -e to override
+  #  - openshift_password: password # Default value ... Use -e to override
+  pre_tasks:
+  - include_vars: 
+      file: "{{ api_document_file }}"    
+  roles:
+  - role: openshift-defaults
+  - role: create-openshift-resources
