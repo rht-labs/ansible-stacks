@@ -41,7 +41,7 @@
     openshift_token: ''
   when: openshift_token is not defined
 
-- name: "Default oc_login to True"
+- name: "Default oc_login to True when not set"
   set_fact:
     oc_login: True
   when: oc_login is not defined
