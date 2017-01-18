@@ -5,20 +5,26 @@
 - name: "Set Default Cluster Facts"
   set_fact:
     openshift_persistent_volumes_def: ''
-    openshift_resources_present: false
+    openshift_resources_present: False
     openshift_cluster: "{{ openshift_cluster_item }}" # http://docs.ansible.com/ansible/playbooks_loops.html#loops-and-includes-in-2-0
-    auth_token: 'no'
-    auth_user_pass: 'no'
+    auth_token: False
+    auth_user_pass: False
 
 - name: "Set Variable openshift_persistent_volumes_def Fact"
   set_fact:
     openshift_persistent_volumes_def: "{{ openshift_cluster.persistent_volumes }}"
-  when: openshift_cluster.persistent_volumes is defined and openshift_cluster.persistent_volumes != "" and openshift_cluster.persistent_volumes|length > 0
+  when:
+  - openshift_cluster.persistent_volumes is defined
+  - openshift_cluster.persistent_volumes|trim != ""
+  - openshift_cluster.persistent_volumes|length > 0
 
 - name: "Set Variable openshift_resources_present Facts"
   set_fact:
-    openshift_resources_present: true
-  when: openshift_cluster.openshift_resources is defined and openshift_cluster.openshift_resources != "" and openshift_cluster.openshift_resources|length > 0
+    openshift_resources_present: True
+  when:
+  - openshift_cluster.openshift_resources is defined
+  - openshift_cluster.openshift_resources|trim != ""
+  - openshift_cluster.openshift_resources|length > 0
 
 - name: "Set variable openshift_user when not set"
   set_fact:
@@ -35,38 +41,49 @@
     openshift_token: ''
   when: openshift_token is not defined
 
-- name: "Default oc_login to 'yes' when not set"
+- name: "Default oc_login to True"
   set_fact:
-    oc_login: 'yes'
+    oc_login: True
   when: oc_login is not defined
 
 - name: "Check whether we will authenticate with username & password"
   set_fact:
-    auth_user_pass: 'yes'
-  when: openshift_user != '' and openshift_password != '' and oc_login == 'yes'
+    auth_user_pass: True
+  when:
+  - openshift_user|trim != ''
+  - openshift_password|trim != ''
+  - oc_login|bool == True
 
 - name: "Check whether we will authenticate with a token"
   set_fact:
-    auth_token: 'yes'
-  when: openshift_token != '' and oc_login == 'yes'
+    auth_token: True
+  when:
+  - openshift_token|trim != ''
+  - oc_login|bool == True
 
 - name: Fail for Missing Authentication method
-  fail: msg="This role requires either openshift_token or openshift_user and openshift_password to be set"
+  fail: msg="This role requires either openshift_token, or openshift_user and openshift_password to be set"
   when:
-  - auth_token == 'no'
-  - auth_user_pass == 'no'
-  - oc_login == 'yes'
+  - auth_token|bool == False
+  - auth_user_pass|bool == False
+  - oc_login|bool == True
 
 - name: "Fail for Missing OpenShift Host Env"
   fail: msg="This role requires openshift_cluster.openshift_host_env to be set and non empty"
-  when: openshift_resources_present == true and openshift_cluster.openshift_host_env is not defined or openshift_cluster.openshift_host_env == ""
+  when:
+  - openshift_resources_present|bool == True
+  - openshift_cluster.openshift_host_env is not defined or openshift_cluster.openshift_host_env|trim == ""
 
 - name: "Log in to OpenShift Client"
   command: >
     {{ openshift.common.client_binary }} login {{ openshift_cluster.openshift_host_env }}
     --insecure-skip-tls-verify=true --username={{ openshift_user }} --password={{ openshift_password }}
   changed_when: False
-  when: openshift_resources_present == true and auth_user_pass == true and auth_token != true and oc_login == 'yes'
+  when:
+  - openshift_resources_present|bool == True
+  - auth_user_pass|bool == True
+  - auth_token|bool == False
+  - oc_login|bool == True
 
 - name: "Add token to all openshift client comands when token is set"
   set_fact:
@@ -74,19 +91,19 @@
       common:
         client_binary: "{{ openshift.common.client_binary }} --token={{ openshift_token }}"
         admin_binary: "{{ openshift.common.admin_binary }} --token={{ openshift_token }}"
-  when: auth_token == True
+  when: auth_token|bool == True
 
 - include: create_persistent_volumes.yml
   with_items: '{{ openshift_persistent_volumes_def }}'
   loop_control:
     loop_var: persistent_volumes_item
   static: no
-  when: openshift_persistent_volumes_def != ''
+  when: openshift_persistent_volumes_def|trim != ''
 
 - include: create_openshift_resources.yml
-  when: openshift_resources_present == true
+  when: openshift_resources_present|bool == True
 
 - name: "Alert User No OpenShift Resources Were Declared"
   debug:
     msg: "There were no openshift_resources set for your openshift_cluster. This is the key data for this role, so you may want to check that you do not have typo in the request."
-  when: openshift_resources_present == false
+  when: openshift_resources_present|bool == False

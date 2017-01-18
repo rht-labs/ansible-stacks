@@ -29,7 +29,7 @@
       oc logout
 
   vars:
-    oc_login: 'yes'
+    oc_login: True
     openshift_token: "{{ sa_token.stdout }}"
 
   roles:
