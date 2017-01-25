@@ -3,7 +3,7 @@ We're using [Semantic Versioning](http://semver.org/) and following [this defini
 
 # Released
 
-# [v0.1.0] - 2017-01-24
+# [v1.0.0] - 2017-01-24
 
 ## Added
 - Initial release per the [api-design repo](https://github.com/rht-labs/api-design)
