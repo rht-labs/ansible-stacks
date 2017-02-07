@@ -79,11 +79,25 @@
   when: persistent_volume_claims_def != ''
   static: no
 
+# - include: promote_image_oc_generic.yml
+#   with_items: '{{ project.pipelines }}'
+#   loop_control:
+#     loop_var: pipeline_item
+#   when: project.pipelines != '' and project.environment_type == "promotion"
+#   static: no
+
 - include: create_app.yml
   with_items: '{{ apps_def }}'
   loop_control:
     loop_var: app_item
   when: apps_def != ''
+  static: no
+
+- include: create_templates.yml
+  with_items: '{{ project.templates }}'
+  loop_control:
+    loop_var: template_item
+  when: project.templates != ''
   static: no
 
 ## In order to increase performance when more than one app is present in a build env, this check was moved here after create_app.yml so that builds and image pushes can execute in parallel.
@@ -110,3 +124,5 @@
 - name: "Set Facts At The End of {{ project.name }}"
   set_fact:
     last_used_project_name: "{{ project.name }}"
+
+# TODO integrate these piece

@@ -65,17 +65,6 @@
                 "name": "infographic-node-app"
               }
             ]
-          },
-          {
-            "name": "template-test",
-            "display_name": "Test app creation from template",
-            "environment_type": "test",
-            "apps": [
-              {
-                "name": "nodejs",
-                "from_template": "nodejs-mongodb-example"
-              }
-            ]
           }
         ]
       }

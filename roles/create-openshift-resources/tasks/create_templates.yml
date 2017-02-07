@@ -1,0 +1,38 @@
+---
+
+- name: Set Default template Facts
+  set_fact:
+    template: "{{ template_item }}"
+
+- name: Fail for Missing name
+  fail: msg="This role requires template.name to be set and non empty"
+  when: template.name is not defined or template.name == ''
+
+- name: "Determine if Objects from {{ template.name }} Exists"
+  command: >
+     {{ openshift.common.client_binary }} get ds,dc,bc,is,svc,pvc,sa,rolebindings -l pbiTemplateName={{ template.name }} -n {{ project.name }} -o json
+  register: get_template_objects_result
+  failed_when: false
+  changed_when: false
+
+- name: "Create Response Object"
+  set_fact:
+    oc_response_object: "{{ get_template_objects_result.stdout  | from_json }}"
+
+- name: "Create Response Object Count"
+  set_fact:
+    oc_response_object_count: "{{ oc_response_object['items'] | length }}"
+
+- name: "Apply {{ template.name }} Template with Parameters"
+  command: >
+     {{ openshift.common.client_binary }} new-app --template {{ template.name }} -p {{ template.parameters | key_value_pairs_string }} -l pbiTemplateName={{ template.name  }} -n {{ project.name }}
+  when: oc_response_object_count == "0" and template.parameters is defined and template.parameters | length > 0
+
+- name: "Apply {{ template.name }} Template without Parameters"
+  command: >
+     {{ openshift.common.client_binary }} new-app --template {{ template.name }} -l pbiTemplateName={{ template.name  }} -n {{ project.name }}
+  when: oc_response_object_count == "0" and (template.parameters is not defined or template.parameters | length == 0)
+
+- debug:
+    msg: "Project {{ project.name }} contains objects that were previously created using template {{ template.name }}, so we're skipping {{ template.name }} to avoid collisions."
+  when: oc_response_object_count != "0"

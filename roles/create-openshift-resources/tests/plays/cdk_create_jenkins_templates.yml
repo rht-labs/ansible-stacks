@@ -1,0 +1,20 @@
+---
+# This is a unit test of Project.templates
+
+- name: "Create test resources"
+  hosts: localhost
+
+  vars_files:
+    - vars/jenkins_templates.json
+
+  roles:
+    - openshift-defaults
+    - create-openshift-resources
+
+# cleanup
+  post_tasks:
+  - name: "Remove project {{ item.name }}"
+    command: >
+      {{ openshift.common.client_binary }} delete project {{ item.name  }}
+    when: '"{{ item.name }}" != "ci" and cleanup is defined and cleanup'
+    with_items: '{{ openshift_resources.projects }}'

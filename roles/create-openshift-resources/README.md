@@ -2,6 +2,22 @@
 
 An ansible role that consumes the model defined in the [Open Innovation Labs Automation API](https://github.com/rht-labs/api-design). The API declares a desired state in one or more OpenShift clusters and this role is responsible for creating that state. Both projects are in early stages, so unless otherwise noted, this work is being developed against the master branch of the Automation API. Future versions will look to stabilize against a tagged release of the API.
 
+## Variables
+
+Most variables should be ingested by setting `openshift_clusters` to a document conforming to the [automation-api spec](https://github.com/rht-labs/api-design). The below items should be set another way.
+
+Required to be set via CLI or host variables:
+* `openshift_user`: user to login into openshift
+* `openshift_password`: password for above user
+
+Possible overrides via CLI or host variables:
+* `openshift_url`, which can override `openshift_cluster.openshift_host_env` in the API document (if it exists): OpenShift REST API endpoint used to login
+
+## Internal Features
+
+Some times it's useful to develop features that extend the Automation API before introducing the features to the API. Currently, the below features are not exposed:
+
+* Project.Templates
 
 ## Testing
 
@@ -41,6 +57,18 @@ For test that aren't a good fit for a CDK run, i.e.: need external / 3rd party r
   2. (as lisa) >> ansible-playbook -e 'openshift_username=lisa openshift_password=mypassword! [cleanup=yes]' <playbook>
 ```
 
-**Notes** 
+**Notes**
   1. The first command to grant cluster-admin to the user is only needed to be done once per cluster for a user.
   1. If the tests should do clean-up after execution, make sure to set the `cleanup` environment variable - i.e.: >> ansible-playbook -e 'cleanup=yes' <playbook>
+
+
+### Unit Testing
+
+Custom modules in `library` are component tested with pytest. They integrate with the OpenShift CLI, and require a valid connection to an OpenShift cluster
+
+#### Setup to run tests
+* make sure [pytest is installed](http://doc.pytest.org/en/latest/getting-started.html)
+* run `pytest` from `roles/create-openshift-resources/tests/units/`
+
+#### TODO
+* extract OpenShift login details
