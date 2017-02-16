@@ -1,0 +1,2 @@
+[openshift]
+cluster ansible_connection=local

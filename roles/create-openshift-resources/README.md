@@ -59,26 +59,34 @@ $ ssh-add <your_vagrant_dir>/.vagrant/machines/default/virtualbox/private_key
 
 Once your vagrant ssh key is add, you should be able to run tests like so:
 
-To run the tests, using this command:
+**To the run the tests and leave resources created intact:**
 
 ```
 $ cd roles/create-openshift-resources/tests/plays
 $ ansible-playbook -i inventory_cdk <test_playbook>
 ```
 
+**To the run the tests and delete created resources:**
+```
+$ cd roles/create-openshift-resources/tests/plays
+$ ansible-playbook -i inventory_cdk -e cleanup=true <test_playbook>
+```
+
 #### OpenShift Cluster
 
-You may prefer to use a real OpenShift Cluster over the CDK. There are two ways to do this:
+You may prefer to use a real OpenShift Cluster over the CDK. To do this, we've provided `inventory_cluster`, which will use `ansible_connection = local`, and thus require the host to have `oc` installed. However; `inventory_cluster` does NOT provide `openshift_user`, `openshift_password` & `openshift_url` for obvious reasons.
 
-1. create an `inventory` file (which is currently git ignored so don't accidentally commit it).
-  1. a
-  2. b
-2.
- As many of the roles part of the `ansible-stacks` implementations touches on cluster administration related areas, it's required that the user used is part of the `cluster-admins` role. For example, to run as the user **lisa** with password **mypassword!**, the following steps would be required:
+**To the run the tests and leave resources created intact:**
 
 ```
-  1. (as root) >> oadm policy add-cluster-role-to-user cluster-admin lisa
-  2. (as lisa) >> ansible-playbook -e 'openshift_username=lisa openshift_password=mypassword! [cleanup=yes]' <playbook>
+$ cd roles/create-openshift-resources/tests/plays
+$ ansible-playbook -i inventory_cluster -e "openshift_user=<user> openshift_password=<password> openshift_url=<url>" <test_playbook>
+```
+
+**To the run the tests and delete created resources:**
+```
+$ cd roles/create-openshift-resources/tests/plays
+$ ansible-playbook -i inventory_cluster -e "openshift_user=<user> openshift_password=<password> openshift_url=<url> cleanup=true" <test_playbook>
 ```
 
 

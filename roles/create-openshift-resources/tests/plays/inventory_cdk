@@ -1,4 +1,2 @@
-localhost ansible_connection=local
-
 [openshift]
 10.1.2.2 ansible_user=vagrant openshift_url=localhost:8443 openshift_user=admin openshift_password=admin
