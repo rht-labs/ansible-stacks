@@ -8,6 +8,7 @@
     role_bindings_def: ''
     group_role_bindings_def: ''
     persistent_volume_claims_def: ''
+    templates_def: ''
     apps_def: ''
     project: "{{ project_item }}"
 
@@ -35,6 +36,11 @@
   set_fact:
     persistent_volume_claims_def: "{{ project.persistent_volume_claims }}"
   when: project.persistent_volume_claims is defined and project.persistent_volume_claims != "" and project.persistent_volume_claims|length > 0
+
+- name: "Set Variable templates_def Fact"
+  set_fact:
+    templates_def: "{{ project.templates }}"
+  when: project.templates is defined and project.templates != "" and project.templates|length > 0
 
 - name: "Set Variable apps_def Fact"
   set_fact:
@@ -94,10 +100,10 @@
   static: no
 
 - include: create_templates.yml
-  with_items: '{{ project.templates }}'
+  with_items: '{{ templates_def }}'
   loop_control:
     loop_var: template_item
-  when: project.templates != ''
+  when: templates_def != ''
   static: no
 
 ## In order to increase performance when more than one app is present in a build env, this check was moved here after create_app.yml so that builds and image pushes can execute in parallel.
