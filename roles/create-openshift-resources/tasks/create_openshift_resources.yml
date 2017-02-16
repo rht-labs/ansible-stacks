@@ -21,7 +21,7 @@
 - name: "Alert User No OpenShift Projects Were Declared"
   debug:
     msg: "There were no projects set for your openshift_resources. This is key data for this role, so you may want to check that you do not have typo in the request."
-  when: projects_def != ''
+  when: projects_def == ''
 
 - name: "Configure Jenkins Jobs"
   include: configure_jenkins_jobs.yml
