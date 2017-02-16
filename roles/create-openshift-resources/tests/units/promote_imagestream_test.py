@@ -2,7 +2,6 @@ import sys
 import subprocess
 import pytest
 
-sys.path.append('../../library/')
 import promote_imagestream
 
 

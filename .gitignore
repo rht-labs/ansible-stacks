@@ -1,3 +1,5 @@
 *.pyc
 *.retry
 *.cache
+*.idea
+inventory

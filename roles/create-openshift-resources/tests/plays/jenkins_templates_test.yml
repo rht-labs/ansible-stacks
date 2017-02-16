@@ -1,0 +1,54 @@
+---
+# This is a unit test of Project.templates
+
+- name: "Create test resources"
+  hosts: openshift
+
+  pre_tasks:
+
+    - include_vars:
+        file: vars/jenkins_templates.json
+
+    # this is done in create-openshift-resources, maybe there is a more elegant way to handle this long term?
+    - name: 'Login to OC'
+      command: >
+        oc login {{ openshift_url }} -u {{ openshift_user }} -p {{ openshift_password }}
+
+
+    # TODO we need to move this function to an ansible module
+    - name: 'Create OpenShift Project {{ item }}'
+      command: >
+        oc new-project {{ item }}
+      ignore_errors: yes
+      with_items:
+        - 'template-uat'
+        - 'template-dev'
+
+    - name: "Install Jenkins S2I Template in {{ item }}"
+      command: >
+        oc create -f https://raw.githubusercontent.com/sherl0cks/examples/jenkins-ocp-templates/jenkins-ocp-templates/jenkins-s2i-template.json -n {{ item }}
+      ignore_errors: yes
+      with_items:
+        - 'template-uat'
+        - 'template-dev'
+
+    - name: "Install Jenkins Ephemeral Template in {{ item }}"
+      command: >
+        oc create -f https://raw.githubusercontent.com/openshift/origin/release-1.3/examples/jenkins/jenkins-ephemeral-template.json -n {{ item }}
+      ignore_errors: yes
+      with_items:
+        - 'template-uat'
+        - 'template-dev'
+
+
+  roles:
+    - openshift-defaults
+    - create-openshift-resources
+
+# cleanup
+  post_tasks:
+  - name: "Remove project {{ item.name }}"
+    command: >
+      {{ openshift.common.client_binary }} delete project {{ item.name  }}
+    when: '"{{ item.name }}" != "ci" and cleanup is defined and cleanup'
+    with_items: '{{ openshift_resources.projects }}'

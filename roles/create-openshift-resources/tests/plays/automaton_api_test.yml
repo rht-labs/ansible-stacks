@@ -2,14 +2,10 @@
 # This test covers the full feature set provided by the role
 
 - name: "Create test resources"
-  hosts: cdk
+  hosts: openshift
 
   vars_files:
-    - vars/nexus.json
-
-  vars:
-    openshift_password: admin
-    openshift_user: admin
+    - vars/automation_api.json
 
   roles:
     - openshift-defaults

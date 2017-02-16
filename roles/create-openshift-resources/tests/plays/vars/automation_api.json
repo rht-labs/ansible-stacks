@@ -1,116 +1,78 @@
 {
-	"openshift_clusters": [
-		{
-			"openshift_host_env": "10.1.2.2:8443",
-			"openshift_resources": {
-				"projects": [
-					{
-						"name": "labs-api-dev",
-						"display_name": "Labs API - Dev",
-						"environment_type": "build",
-						"apps": [
-							{
-								"name": "automation-api",
-								"scm_url": "https://github.com/rht-labs/automation-api.git",
-								"scm_ref": "master",
-								"build_tool": "mvn-3",
-								"build_application_commands": [
-									"mvn clean install"
-								],
-								"labels": {
-									"provider": "fabric8"
-								},
-								"environment_variables": {
-									"POSTGRESQL_SVC": "postgresql.labs-api-dev.svc.cluster.local",
-									"POSTGRESQL_USER": "autoautoauto",
-									"POSTGRESQL_PASSWORD": "password",
-									"POSTGRESQL_DATABASE": "automation"
-								},
-								"routes": [
-									{
-										"route_type": "default",
-										"hostname": "pipeline.cdk.10.1.2.2.xip.io",
-										"port": "8080",
-										"service": {
-											"ports": [
-												{
-													"port": 8080,
-													"protocol": "TCP",
-													"target_port": 8080
-												},
-												{
-													"port": 5000,
-													"protocol": "TCP",
-													"target_port": 5000
-												}
-											]
-										}
-									}
-								]
-							},
-							{
-								"name": "automation-api-db",
-								"base_image": "openshift/postgresql",
-								"environment_variables": {
-									"POSTGRESQL_USER": "apidb",
-									"POSTGRESQL_PASSWORD": "apidb01",
-									"POSTGRESQL_DATABASE": "automation_api_dev"
-								}
-							}
-						],
-						"group_to_role": [
-							{
-								"group": {
-									"name": "system:serviceaccounts"
-								},
-								"roles": [
-									{
-										"name": "view"
-									}
-								]
-							}
-						]
-					},
-					{
-						"name": "labs-api-delivery",
-						"display_name": "Labs API - Delivery",
-						"environment_type": "promotion",
-						"apps": [
-							{
-								"name": "automation-api",
-								"base_image": "automation-api",
-								"routes": [
-									{
-										"route_type": "default"
-									}
-								]
-							},
-							{
-								"name": "automation-api-db",
-								"base_image": "openshift/postgresql",
-								"environment_variables": {
-									"POSTGRESQL_USER": "apidb",
-									"POSTGRESQL_PASSWORD": "apidb01",
-									"POSTGRESQL_DATABASE": "automation_api_delivery"
-								},
-								"build_tool": "none"
-							}
-						],
-						"group_to_role": [
-							{
-								"group": {
-									"name": "system:serviceaccounts"
-								},
-								"roles": [
-									{
-										"name": "view"
-									}
-								]
-							}
-						]
-					}
-				]
-			}
-		}
-	]
+  "name": "automation api test",
+  "openshift_clusters": [
+    {
+      "openshift_host_env": "10.1.2.2:8443",
+      "openshift_resources": {
+        "projects": [
+          {
+            "name": "labs-api-dev",
+            "display_name": "Labs API - Dev",
+            "environment_type": "build",
+            "apps": [
+              {
+                "name": "automation-api",
+                "scm_url": "https://github.com/rht-labs/automation-api.git",
+                "scm_ref": "master",
+                "build_tool": "mvn-3",
+                "build_application_commands": [
+                  "mvn clean install"
+                ],
+                "labels": {
+                  "provider": "fabric8"
+                },
+                "environment_variables": {
+                  "POSTGRESQL_SVC": "postgresql.labs-api-dev.svc.cluster.local",
+                  "POSTGRESQL_USER": "autoautoauto",
+                  "POSTGRESQL_PASSWORD": "password",
+                  "POSTGRESQL_DATABASE": "automation"
+                },
+                "routes": [
+                  {
+                    "route_type": "default",
+                    "port": "8080",
+                    "service": {
+                      "ports": [
+                        {
+                          "port": 8080,
+                          "protocol": "TCP",
+                          "target_port": 8080
+                        },
+                        {
+                          "port": 5000,
+                          "protocol": "TCP",
+                          "target_port": 5000
+                        }
+                      ]
+                    }
+                  }
+                ]
+              },
+              {
+                "name": "automation-api-db",
+                "base_image": "openshift/postgresql",
+                "environment_variables": {
+                  "POSTGRESQL_USER": "apidb",
+                  "POSTGRESQL_PASSWORD": "apidb01",
+                  "POSTGRESQL_DATABASE": "automation_api_dev"
+                }
+              }
+            ],
+            "group_to_role": [
+              {
+                "group": {
+                  "name": "system:serviceaccounts"
+                },
+                "roles": [
+                  {
+                    "name": "view"
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    }
+  ]
 }

@@ -1,4 +1,4 @@
 localhost ansible_connection=local
 
-[cdk]
-cdk_vagrant_1 ansible_user=vagrant ansible_host=10.1.2.2 openshift_password=admin openshift_user=admin
+[openshift]
+10.1.2.2 ansible_user=vagrant openshift_url=localhost:8443 openshift_user=admin openshift_password=admin

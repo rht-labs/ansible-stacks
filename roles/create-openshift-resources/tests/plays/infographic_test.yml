@@ -1,11 +1,11 @@
 ---
-# This is a unit test of Project.templates
+# This test covers the full feature set provided by the role
 
 - name: "Create test resources"
-  hosts: localhost
+  hosts: openshift
 
   vars_files:
-    - vars/jenkins_templates.json
+    - vars/infographic.json
 
   roles:
     - openshift-defaults
