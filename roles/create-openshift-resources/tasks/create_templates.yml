@@ -10,7 +10,7 @@
 
 - name: "Determine if Objects from {{ template.name }} Exists"
   command: >
-     {{ openshift.common.client_binary }} get ds,dc,bc,is,svc,pvc,sa,rolebindings -l pbiTemplateName={{ template.name }} -n {{ project.name }} -o json
+     {{ openshift.common.client_binary }} get buildconfigs,deploymentconfigs,imagestreams,persistentvolumeclaims,rolebindings,services,serviceaccounts -l pbiTemplateName={{ template.name }} -n {{ project.name }} -o json
   register: get_template_objects_result
   failed_when: false
   changed_when: false
