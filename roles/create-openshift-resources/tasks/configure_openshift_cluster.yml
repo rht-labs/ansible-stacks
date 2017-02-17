@@ -7,6 +7,7 @@
     openshift_persistent_volumes_def: ''
     openshift_resources_present: False
     openshift_cluster: "{{ openshift_cluster_item }}" # http://docs.ansible.com/ansible/playbooks_loops.html#loops-and-includes-in-2-0
+    openshift_login_url: ''
     auth_token: False
     auth_user_pass: False
 
@@ -17,6 +18,16 @@
   - openshift_cluster.persistent_volumes is defined
   - openshift_cluster.persistent_volumes|trim != ""
   - openshift_cluster.persistent_volumes|length > 0
+
+- name: "Set OpenShift Login URL with openshift_url"
+  set_fact:
+    openshift_login_url: "{{ openshift_url }}"
+  when: openshift_url is defined and openshift_url != ''
+
+- name: "Set OpenShift Login URL with openshift_cluster.openshift_host_env"
+  set_fact:
+    openshift_login_url: "{{ openshift_cluster.openshift_host_env }}"
+  when: openshift_login_url == '' and openshift_cluster.openshift_host_env is defined and openshift_cluster.openshift_host_env != ''
 
 - name: "Set Variable openshift_resources_present Facts"
   set_fact:
@@ -69,14 +80,14 @@
   - oc_login|bool == True
 
 - name: "Fail for Missing OpenShift Host Env"
-  fail: msg="This role requires openshift_cluster.openshift_host_env to be set and non empty"
-  when:
+  fail: msg="This role requires openshift_cluster.openshift_host_env (in the API document) or openshift_url (via CLI or host vars) to be set and non empty"
+  when: 
   - openshift_resources_present|bool == True
-  - openshift_cluster.openshift_host_env is not defined or openshift_cluster.openshift_host_env|trim == ""
+  - openshift_login_url == ""
 
 - name: "Log in to OpenShift Client"
   command: >
-    {{ openshift.common.client_binary }} login {{ openshift_cluster.openshift_host_env }}
+    {{ openshift.common.client_binary }} login {{ openshift_login_url }}
     --insecure-skip-tls-verify=true --username={{ openshift_user }} --password={{ openshift_password }}
   changed_when: False
   when:

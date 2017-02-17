@@ -1,2 +1,6 @@
 *.pyc
 *.retry
+*.cache
+*.idea
+inventory
+git

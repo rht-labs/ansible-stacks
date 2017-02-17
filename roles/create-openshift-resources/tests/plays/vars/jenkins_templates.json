@@ -1,0 +1,64 @@
+{
+  "name": "jenkins template test",
+  "openshift_clusters": [
+    {
+      "openshift_host_env": "master1.s2.core.rht-labs.com:8443",
+      "openshift_resources": {
+        "projects": [
+          {
+            "name": "template-dev",
+            "display_name": "Jenkins Template - Dev",
+            "environment_type": "build",
+            "templates": [
+              {
+                "name": "jenkins-s2i",
+                "parameters": {
+                  "SOURCE_REPOSITORY_URL": "https://github.com/sherl0cks/openshift-jenkins-s2i-config.git",
+                  "SOURCE_REPOSITORY_REF": "jenkins-2",
+                  "NAME": "jenkins"
+                }
+              },
+              {
+                "name": "jenkins-ephemeral",
+                "parameters": {
+                  "JENKINS_PASSWORD": "password",
+                  "NAMESPACE": "template-dev"
+                }
+              }
+            ],
+            "pipelines": [
+              {
+                "name": "jenkins",
+                "image_streams": [
+                  "jenkins"
+                ]
+              }
+            ]
+          },
+          {
+            "name": "template-uat",
+            "display_name": "Jenkins Template - UAT",
+            "environment_type": "promotion",
+            "templates": [
+              {
+                "name": "jenkins-ephemeral",
+                "parameters": {
+                  "JENKINS_PASSWORD": "password",
+                  "NAMESPACE": "template-uat"
+                }
+              }
+            ],
+            "pipelines": [
+              {
+                "name": "jenkins",
+                "image_streams": [
+                  "jenkins"
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    }
+  ]
+}

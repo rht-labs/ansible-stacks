@@ -4,9 +4,9 @@
   set_fact:
     app: "{{ app_item }}"
 
-- name: Fail for Missing scm_url,  base image, or template
-  fail: msg="This role requires app.scm_url, app.base_image, or app.from_template to be set and non empty"
-  when: app.scm_url is not defined and app.base_image is not defined and app.from_template is not defined
+- name: Fail for Missing scm_url,  base image
+  fail: msg="This role requires app.scm_url or app.base_image to be set and non empty"
+  when: app.scm_url is not defined and app.base_image is not defined
 
 - name: Fail for Missing app name
   fail: msg="This role requires app.name to be set and non empty"
@@ -63,11 +63,6 @@
   set_fact:
     app_options: "{{ app_options }} --name={{ app.name }}"
   when: app.name is defined and app.name != ''
-
-- name: "Add template option"
-  set_fact:
-    app_options: "{{ app_options }} --template={{ app.from_template }}"
-  when: app.from_template is defined and app.from_template != ''
 
 - name: "Set Variable Labels Fact"
   set_fact:
@@ -127,7 +122,7 @@
 - name: "Set Fact For New Pipeline Required"
   set_fact:
     new_pipeline_required: true
-  when: project.environment_type is defined and project.environment_type == 'build' and app.build_tool is defined and app.build_tool != 'none'  
+  when: project.environment_type is defined and project.environment_type == 'build' and app.build_tool is defined and app.build_tool != 'none'
 
 - include: create_preqs_for_pipeline.yml
   when: new_pipeline_required is defined and new_pipeline_required == true
