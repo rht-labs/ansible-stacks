@@ -43,7 +43,9 @@
   - openshift_resources_present|bool == True
   - openshift_login_url == ""
 
-- include: ../../openshift-login
+- name: "Include and perform the openshift-login"
+  include_role:
+    name: openshift-login
 
 - include: create_persistent_volumes.yml
   with_items: '{{ openshift_persistent_volumes_def }}'
