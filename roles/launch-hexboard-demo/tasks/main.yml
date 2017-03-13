@@ -1,6 +1,0 @@
----
-- name: "Launch Hexboard demo in project {{ openshift_project_name }}"
-  uri:
-   url: http://{{ jenkins_host_env }}/job/01-HexboardBuildAndDeploy/buildWithParameters?PROJECT_NAME={{ openshift_project_name }}
-   method: POST
-   status_code: 200,201

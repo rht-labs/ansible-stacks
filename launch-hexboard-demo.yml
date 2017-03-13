@@ -1,8 +1,0 @@
----
-- name: "Launch the Hexboard Demo"
-  hosts: localhost
-
-  roles:
-  - role: openshift-defaults
-  - role: create-ose-project
-  - role: launch-hexboard-demo

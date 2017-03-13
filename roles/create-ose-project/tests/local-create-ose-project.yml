@@ -1,6 +1,0 @@
----
-- name: "Create a test project"
-  hosts: localhost
-
-  roles:
-  - create-ose-project
