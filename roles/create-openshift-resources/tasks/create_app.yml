@@ -22,8 +22,6 @@
     app_source: ''
     app_scm: ''
     labels: ''
-    environment_variables: ''
-    environment_variables_string: ''
     pvc_associations_def: ''
     fabric8_java_s2i_present: false
     routes_present: false
@@ -81,20 +79,13 @@
 
 
 
-- name: "Set Environment_Variables Fact"
+- name: "Add app.environment_variables to app_options"
   set_fact:
-    environment_variables: "{{ app.environment_variables }}"
-  when: app.environment_variables is defined and app.environment_variables != '' and app.environment_variables|length > 0
-
-# http://docs.ansible.com/ansible/playbooks_roles.html#dynamic-versus-static-includes
-- include: create_environment_variables_string.yml
-  when: environment_variables is defined and environment_variables != ''
-  static: no
-
-- name: "Add environment_variables_string to app_options"
-  set_fact:
-    app_options: "{{ app_options }} {{ environment_variables_string }}"
-  when: environment_variables_string is defined and environment_variables_string != ''
+    app_options: "{{ app_options }} {{ app.environment_variables | oc_env_string }}"
+  when:
+  - app.environment_variables is defined
+  - app.environment_variables != ''
+  - app.environment_variables|length > 0
 
 
 - name: "Set Fact for Fabric Java S2I"

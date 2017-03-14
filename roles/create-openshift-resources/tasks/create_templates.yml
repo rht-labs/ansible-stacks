@@ -25,7 +25,7 @@
 
 - name: "Apply {{ template.name }} Template with Parameters"
   command: >
-     {{ openshift.common.client_binary }} new-app --template {{ template.name }} -p {{ template.parameters | key_value_pairs_string }} -l pbiTemplateName={{ template.name  }} -n {{ project.name }}
+     {{ openshift.common.client_binary }} new-app --template {{ template.name }} {{ template.parameters | oc_param_string }} -l pbiTemplateName={{ template.name  }} -n {{ project.name }}
   when: oc_response_object_count == "0" and template.parameters is defined and template.parameters | length > 0
 
 - name: "Apply {{ template.name }} Template without Parameters"

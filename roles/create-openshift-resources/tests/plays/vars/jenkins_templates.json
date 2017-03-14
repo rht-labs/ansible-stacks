@@ -6,15 +6,14 @@
       "openshift_resources": {
         "projects": [
           {
-            "name": "template-dev",
-            "display_name": "Jenkins Template - Dev",
+            "name": "template-dev-ci",
             "environment_type": "build",
             "templates": [
               {
                 "name": "jenkins-s2i",
                 "parameters": {
-                  "SOURCE_REPOSITORY_URL": "https://github.com/sherl0cks/openshift-jenkins-s2i-config.git",
-                  "SOURCE_REPOSITORY_REF": "jenkins-2",
+                  "SOURCE_REPOSITORY_URL": "https://github.com/rht-labs/openshift-jenkins-s2i-config.git",
+                  "SOURCE_REPOSITORY_REF": "master",
                   "NAME": "jenkins"
                 }
               },
@@ -36,7 +35,7 @@
             ]
           },
           {
-            "name": "template-uat",
+            "name": "template-uat-ci",
             "display_name": "Jenkins Template - UAT",
             "environment_type": "promotion",
             "templates": [

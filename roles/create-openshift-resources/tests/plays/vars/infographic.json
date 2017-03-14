@@ -7,7 +7,7 @@
       "openshift_resources": {
         "projects": [
           {
-            "name": "infographic-dev",
+            "name": "infographic-dev-ci",
             "environment_type": "build",
             "apps": [
               {

@@ -6,8 +6,7 @@
       "openshift_resources": {
         "projects": [
           {
-            "name": "labs-api-dev",
-            "display_name": "Labs API - Dev",
+            "name": "labs-api-dev-ci",
             "environment_type": "build",
             "apps": [
               {
@@ -25,7 +24,9 @@
                   "POSTGRESQL_SVC": "postgresql.labs-api-dev.svc.cluster.local",
                   "POSTGRESQL_USER": "autoautoauto",
                   "POSTGRESQL_PASSWORD": "password",
-                  "POSTGRESQL_DATABASE": "automation"
+                  "POSTGRESQL_DATABASE": "automation",
+                  "FOO" : "this is a test for make sure env vars like JAVA_OPTS work with quotes",
+                  "BAR" : true
                 },
                 "routes": [
                   {

@@ -1,7 +1,0 @@
----
-
-- name: "Add variable to environment_variables_string"
-  set_fact:
-    environment_variables_string: "{{ environment_variables_string }} -e '\"{{ item }}={{ environment_variables[item] }}\"' "
-  with_items: '{{ environment_variables.keys() }}'
-

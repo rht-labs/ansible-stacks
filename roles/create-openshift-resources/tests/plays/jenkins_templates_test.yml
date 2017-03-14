@@ -21,24 +21,24 @@
         oc new-project {{ item }}
       ignore_errors: yes
       with_items:
-        - 'template-uat'
-        - 'template-dev'
+        - 'template-uat-ci'
+        - 'template-dev-ci'
 
     - name: "Install Jenkins S2I Template in {{ item }}"
       command: >
         oc create -f https://raw.githubusercontent.com/sherl0cks/examples/jenkins-ocp-templates/jenkins-ocp-templates/jenkins-s2i-template.json -n {{ item }}
       ignore_errors: yes
       with_items:
-        - 'template-uat'
-        - 'template-dev'
+        - 'template-uat-ci'
+        - 'template-dev-ci'
 
     - name: "Install Jenkins Ephemeral Template in {{ item }}"
       command: >
         oc create -f https://raw.githubusercontent.com/openshift/origin/release-1.3/examples/jenkins/jenkins-ephemeral-template.json -n {{ item }}
       ignore_errors: yes
       with_items:
-        - 'template-uat'
-        - 'template-dev'
+        - 'template-uat-ci'
+        - 'template-dev-ci'
 
 
   roles:
