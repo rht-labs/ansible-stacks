@@ -1,1 +1,0 @@
-../../library/promote_imagestream.py

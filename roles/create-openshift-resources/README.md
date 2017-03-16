@@ -15,10 +15,7 @@ Possible overrides via CLI or host variables:
 
 ## Testing
 
-There are two directories of tests in the code base:
-
-* `plays` : ansible playbooks that exercise this role by running it using an API document. At this time, the tests do not have assertions, so a test is considered passed if the execution of the play completes.
-* `units` : these are pytests that exercise custom modules in the role.
+`plays` : ansible playbooks that exercise this role by running it using an API document. At this time, the tests do not have assertions, so a test is considered passed if the execution of the play completes.
 
 ### Running and Writing Playbook Tests
 
@@ -95,17 +92,3 @@ $ ansible-playbook -i inventory_cluster -e "openshift_user=<user> openshift_pass
 1. persistent volumes (hard to make these portable between clusters)
 2. secured routes (requires certs to be setup)
 3. default routes with custom hostnames (hard to make these portable between clusters)
-
-### Running and Writing Units Tests
-
-**The unit tests have the following expectations:**
-
-* `oc` is installed on the host where the tests are running
-* `oc login` has been performed with a user that can create projects and objects in those projects
-* [pytest is installed](http://doc.pytest.org/en/latest/getting-started.html)
-* each unit test cleans up after itself. due to async deletes in OpenShift, you may need to pause between test executions so the cluster can finish deleting resources before you try to recreate them in the test.
-
-**To the run the tests:**
-```
-$ pytest roles/create-openshift-resources/tests/units
-```
