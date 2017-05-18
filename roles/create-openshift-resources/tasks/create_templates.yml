@@ -4,35 +4,50 @@
   set_fact:
     template: "{{ template_item }}"
 
-- name: Fail for Missing name
-  fail: msg="This role requires template.name to be set and non empty"
-  when: template.name is not defined or template.name == ''
+- name: Fail for both template.name and template.filename set
+  fail: msg="This role requires either template.name or template.filename to be set and non empty. They are mutually exclusive."
+  when:
+  - template.name is defined
+  - template.name != ''
+  - template.filename is defined
+  - template.filename != ''
 
-- name: "Determine if Objects from {{ template.name }} Exists"
+- name: Fail for both template.name and template.filename missing
+  fail: msg="This role requires either template.name or template.filename to be set and non empty. They are mutually exclusive."
+  when:
+  - template.name is not defined or template.name == ''
+  - template.filename is not defined or template.filename == ''
+
+- name: "Apply {{ template.name }} Remote Template with Parameters"
   command: >
-     {{ openshift.common.client_binary }} get buildconfigs,deploymentconfigs,imagestreams,persistentvolumeclaims,rolebindings,services,serviceaccounts -l pbiTemplateName={{ template.name }} -n {{ project.name }} -o json
-  register: get_template_objects_result
-  failed_when: false
-  changed_when: false
+     bash -c "{{ openshift.common.client_binary }} process {{ template.name }} {{ template.parameters | oc_param_string }} | {{ openshift.common.client_binary }} apply -f - -n {{ project.name }}"
+  when:
+  - template.name is defined
+  - template.name != ''
+  - template.parameters is defined
+  - template.parameters | length > 0
 
-- name: "Create Response Object"
-  set_fact:
-    oc_response_object: "{{ get_template_objects_result.stdout  | from_json }}"
-
-- name: "Create Response Object Count"
-  set_fact:
-    oc_response_object_count: "{{ oc_response_object['items'] | length }}"
-
-- name: "Apply {{ template.name }} Template with Parameters"
+- name: "Apply {{ template.name }} Remote Template without Parameters"
   command: >
-     {{ openshift.common.client_binary }} new-app --template {{ template.name }} {{ template.parameters | oc_param_string }} -l pbiTemplateName={{ template.name  }} -n {{ project.name }}
-  when: oc_response_object_count == "0" and template.parameters is defined and template.parameters | length > 0
+     bash -c "{{ openshift.common.client_binary }} process {{ template.name }} | oc apply -f - -n {{ project.name }}"
+  when:
+  - template.name is defined
+  - template.name != ''
+  - template.parameters is not defined or template.parameters | length == 0
 
-- name: "Apply {{ template.name }} Template without Parameters"
+- name: "Apply {{ template.filename }} Local Template with Parameters"
   command: >
-     {{ openshift.common.client_binary }} new-app --template {{ template.name }} -l pbiTemplateName={{ template.name  }} -n {{ project.name }}
-  when: oc_response_object_count == "0" and (template.parameters is not defined or template.parameters | length == 0)
+     bash -c "{{ openshift.common.client_binary }} process -f {{ template.filename }} {{ template.parameters | oc_param_string }} | {{ openshift.common.client_binary }} apply -f - -n {{ project.name }}"
+  when:
+  - template.filename is defined
+  - template.filename != ''
+  - template.parameters is defined
+  - template.parameters | length > 0
 
-- debug:
-    msg: "Project {{ project.name }} contains objects that were previously created using template {{ template.name }}, so we're skipping {{ template.name }} to avoid collisions."
-  when: oc_response_object_count != "0"
+- name: "Apply {{ template.filename }} Local Template without Parameters"
+  command: >
+     bash -c "{{ openshift.common.client_binary }} process -f {{ template.filename }} | oc apply -f - -n {{ project.name }}"
+  when:
+  - template.filename is defined
+  - template.filename != ''
+  - template.parameters is not defined or template.parameters | length == 0
