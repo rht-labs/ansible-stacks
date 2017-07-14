@@ -91,7 +91,10 @@
 - name: "Set Fact for Fabric Java S2I"
   set_fact:
     fabric8_java_s2i_present: true
-  when: app.labels.provider is defined and app.labels.provider == 'fabric8'
+  when:
+  - app.labels is defined 
+  - app.labels.provider is defined
+  - app.labels.provider == 'fabric8'
 
 - name: "Set Fact for Persistent Volume Claim Associations"
   set_fact:
