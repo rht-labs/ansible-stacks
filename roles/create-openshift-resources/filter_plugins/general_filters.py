@@ -15,7 +15,7 @@ def create_param_string(key_value_pairs):
     pairs = []
     string = ""
     for key in key_value_pairs:
-        pair = "\"{}={}\"".format(key, key_value_pairs[key])
+        pair = "%s='%s'" % (key, key_value_pairs[key])
         pairs.append(pair)
     for i, pair in enumerate(pairs):
         string += " -p {}".format(pair)
@@ -26,7 +26,7 @@ def create_env_string(key_value_pairs):
     pairs = []
     string = ""
     for key in key_value_pairs:
-        pair = "\"{}={}\"".format(key, key_value_pairs[key])
+        pair = "%s='%s'" % (key, key_value_pairs[key])
         pairs.append(pair)
     for i, pair in enumerate(pairs):
         string += " -e {}".format(pair)
