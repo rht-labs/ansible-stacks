@@ -8,6 +8,7 @@
       method: GET
       HEADER_Content-Type: "application/json"
       return_content: yes
+      validate_certs: False
     register: env_config
   - set_fact:
       env_data: "{{ env_config.content | from_json }}"
