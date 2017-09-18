@@ -1,3 +1,11 @@
+# DEPRECATED WARNING
+**THIS ROLE HAS MOVED ...**
+
+You can find the new home for this role [here](https://github.com/redhat-cop/infra-ansible)
+
+#  ==== ORIGINAL README CONTENT BELOW =====
+
+
 Create Confluence Space Role
 =========
 
