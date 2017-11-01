@@ -1,3 +1,7 @@
+# This project is deprecated.
+
+It has been replaced by https://github.com/redhat-cop/casl-ansible/tree/master/roles/openshift-applier and https://github.com/rht-labs/labs-ci-cd
+
 # Open Innovation Labs: Ansible Stacks
 
 This repository contains a variety of Ansible roles to build and configure different technology stacks for Open Innovation Labs engagements. Currently, the repository is broken into two types of roles:
