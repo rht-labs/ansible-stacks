@@ -1,6 +1,0 @@
----
-- name: "Configure Nexus"
-  hosts: nexus
-
-  roles:
-  - configure-nexus
